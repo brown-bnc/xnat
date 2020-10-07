@@ -1,0 +1,11 @@
+version: "3.5"
+services:
+  xnat:
+    build: .
+    image: dtr.services.brown.edu/cis/xnat:1.0.0
+    ports:
+      - "8000:8000"
+      - "8080:8080"
+      - "8104:8104"
+    environment:
+      CATALINA_OPTS: "-Xms128m -Xmx1024m"

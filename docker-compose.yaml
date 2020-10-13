@@ -2,10 +2,20 @@ version: "3.5"
 services:
   xnat:
     build: .
-    image: dtr.services.brown.edu/cis/xnat:1.0.0
+    image: dtr.services.brown.edu/cis/xnat:1.7.6
     ports:
       - "8000:8000"
       - "8080:8080"
       - "8104:8104"
     environment:
       CATALINA_OPTS: "-Xms128m -Xmx1024m"
+      POSTGRES_HOST: "postgres"
+      POSTGRES_DB: "xnat"
+      POSTGRES_USER: "xnat"
+      POSTGRES_PASSWORD: "xnat"
+  postgres:
+    image: postgres:9
+    environment:
+      POSTGRES_DB: "xnat"
+      POSTGRES_USER: "xnat"
+      POSTGRES_PASSWORD: "xnat"

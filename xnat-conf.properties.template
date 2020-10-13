@@ -7,9 +7,9 @@
 # Released under the Simplified BSD.
 #
 datasource.driver=org.postgresql.Driver
-datasource.url=jdbc:postgresql://%%POSTGRES_HOST%%/%%POSTGRES_DB%%
-datasource.username=%%POSTGRES_USERNAME%%
-datasource.password=%%POSTGRES_PASSWORD%%xnat
+datasource.url=jdbc:postgresql://@@POSTGRES_HOST@@:@@POSTGRES_PORT@@/@@POSTGRES_DB@@
+datasource.username=@@POSTGRES_USER@@
+datasource.password=@@POSTGRES_PASSWORD@@
 
 hibernate.dialect=org.hibernate.dialect.PostgreSQL9Dialect
 hibernate.hbm2ddl.auto=update

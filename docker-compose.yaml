@@ -13,6 +13,11 @@ services:
       POSTGRES_DB: "xnat"
       POSTGRES_USER: "xnat"
       POSTGRES_PASSWORD: "xnat"
+      LDAP_HOST: "${LDAP_HOST}"
+      LDAP_USER: "${LDAP_USER}"
+      LDAP_PASSWORD: "${LDAP_PASSWORD}"
+      LDAP_SEARCH_BASE: "${LDAP_SEARCH_BASE}"
+      LDAP_SEARCH_FILTER: "${LDAP_SEARCH_FILTER}"
   postgres:
     image: postgres:9
     environment:

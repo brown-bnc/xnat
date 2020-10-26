@@ -21,13 +21,21 @@ RUN mkdir -p \
     /data/xnat/prearchive \
     /data/xnat/dicom-export
 
-RUN cd "${CATALINA_HOME}/webapps" \
-    && curl -L -o ROOT.war "https://api.bitbucket.org/2.0/repositories/xnatdev/xnat-web/downloads/xnat-web-${XNAT_VERSION}.war"
+RUN mkdir -p "${CATALINA_HOME}/webapps/ROOT" \
+    && cd "${CATALINA_HOME}/webapps/ROOT" \
+    && curl -Lo ROOT.war "https://api.bitbucket.org/2.0/repositories/xnatdev/xnat-web/downloads/xnat-web-${XNAT_VERSION}.war" \
+    && jar xf ROOT.war \
+    && rm ROOT.war
+
+RUN cd /data/xnat/home/plugins \
+    && curl -LO "https://github.com/brown-bnc/ldap-auth-plugin/releases/download/v1.0.1/xnat-ldap-auth-plugin-1.0.0.jar"
 
 COPY ./docker-entrypoint.sh "${CATALINA_HOME}/bin/docker-entrypoint.sh"
-COPY ./xnat-conf.properties.template /data/xnat/home/config/xnat-conf.properties
 
 ENV POSTGRES_HOST= POSTGRES_PORT=5432 POSTGRES_DB= POSTGRES_USER= POSTGRES_PASSWORD=
+ENV LDAP_HOST= LDAP_USER= LDAP_PASSWORD= LDAP_SEARCH_BASE= LDAP_SEARCH_FILTER=
+ENV XNAT_SITE_URL= XNAT_ADMIN_EMAIL=
+ENV XNAT_SMTP_HOSTNAME= XNAT_SMTP_USER= XNAT_SMTP_PASSWORD= XNAT_SMTP_PORT= XNAT_SMTP_AUTH=true XNAT_SMTP_START_TLS=true
 
 EXPOSE 8000/tcp 8080/tcp 8104/tcp
 

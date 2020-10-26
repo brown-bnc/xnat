@@ -23,12 +23,12 @@ RUN mkdir -p \
 
 RUN mkdir -p "${CATALINA_HOME}/webapps/ROOT" \
     && cd "${CATALINA_HOME}/webapps/ROOT" \
-    && curl -Lo ROOT.war "https://api.bitbucket.org/2.0/repositories/xnatdev/xnat-web/downloads/xnat-web-${XNAT_VERSION}.war" \
+    && curl -sLo ROOT.war "https://api.bitbucket.org/2.0/repositories/xnatdev/xnat-web/downloads/xnat-web-${XNAT_VERSION}.war" \
     && jar xf ROOT.war \
     && rm ROOT.war
 
 RUN cd /data/xnat/home/plugins \
-    && curl -LO "https://github.com/brown-bnc/ldap-auth-plugin/releases/download/v1.0.1/xnat-ldap-auth-plugin-1.0.0.jar"
+    && curl -sLO "https://github.com/brown-bnc/ldap-auth-plugin/releases/download/v1.0.1/xnat-ldap-auth-plugin-1.0.0.jar"
 
 COPY ./docker-entrypoint.sh "${CATALINA_HOME}/bin/docker-entrypoint.sh"
 

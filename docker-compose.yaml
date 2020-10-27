@@ -2,7 +2,7 @@ version: "3.5"
 services:
   xnat:
     build: .
-    image: dtr.services.brown.edu/cis/xnat:1.7.6
+    image: ghcr.io/brown-bnc/xnat:1.7.6
     ports:
       - "8000:8000"
       - "8080:8080"

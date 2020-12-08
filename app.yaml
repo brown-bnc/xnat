@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: xnat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: xnat
+  template:
+    metadata:
+      labels:
+        app: xnat
+    spec:
+      containers:
+      - name: xnat
+        image: ghcr.io/brown-bnc/xnat:1.7.6
+        envFrom:
+        - configMapRef:
+            name: app-config
+        - secretRef:
+            name: ldap-config
+        ports:
+        - name: http
+          containerPort: 8080
+        - name: dicom
+          containerPort: 8104
+        - name: debug
+          containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: xnat
+  labels:
+    app: xnat
+spec:
+  type: ClusterIP
+  selector:
+    app: xnat
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+      protocol: TCP
+    - name: dicom
+      port: 8104
+      targetPort: 8104
+      protocol: TCP
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: xnat
+  labels:
+    app: xnat
+spec:
+  rules:
+    - host: xnat.local
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: xnat
+              servicePort: 80

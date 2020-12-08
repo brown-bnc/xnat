@@ -18,10 +18,10 @@ jobs:
           password: ${{ secrets.CR_PAT }}
       - name: Save release image name
         run: |
-          echo ::set-env name=RELEASE_IMAGE::$(cat docker-compose.yaml | sed -n 's/^[ ]*image: \(ghcr.*$\)/\1/p')
+          echo "RELEASE_IMAGE=$(cat docker-compose.yaml | sed -n 's/^[ ]*image: \(ghcr.*$\)/\1/p')" >> $GITHUB_ENV
       - name: Save dev image name
         run: |
-          echo ::set-env name=DEV_IMAGE::$(cat docker-compose.yaml | sed -n 's/^[ ]*image: \(ghcr.*\):.*$/\1/p')
+          echo "DEV_IMAGE=$(cat docker-compose.yaml | sed -n 's/^[ ]*image: \(ghcr.*\):.*$/\1/p')" >> $GITHUB_ENV
       - name: Build Docker image
         run: docker-compose build
       - name: Push dev image to GitHub Container Registry

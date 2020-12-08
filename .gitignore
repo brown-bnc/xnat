@@ -1,2 +1,3 @@
 xnat-conf.properties
 .env
+ldap.env

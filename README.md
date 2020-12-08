@@ -95,6 +95,13 @@ and load your LDAP configuration. Then uncomment the `ldap-config` section
 in the `kustomization.yaml` file. Similarly, uncomment the `ldap-config`
 environment section in `app.yaml` and start the service as above.
 
+## Automatic Initialization
+
+If you want to skip the initialization page on first launch, provide both
+`$XNAT_SITE_URL` and `$XNAT_ADMIN_EMAIL` when starting XNAT. The default
+username/password will still be `admin:admin`. If you've provided an LDAP
+configuration, the automatic initialization will enable your LDAP provider.
+
 ## TODO
 * [x] Trim down the `Dockerfile` to bare minimum necessary
 * [x] Build and test the image using Docker

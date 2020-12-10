@@ -13,6 +13,8 @@ configMapGenerator:
   - POSTGRES_DB=xnat
   - POSTGRES_USER=xnat
   - POSTGRES_PASSWORD=xnat
+  - XNAT_SITE_URL=http://xnat.local
+  - XNAT_ADMIN_EMAIL=admin@xnat.local
 - name: db-config
   literals:
   - POSTGRES_DB=xnat

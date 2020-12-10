@@ -33,14 +33,13 @@ generate_auth_config() {
 name=LDAP
 provider.id=ldap
 auth.method=ldap
-visible=true
-auto.enabled=true
-auto.verified=true
 address=${LDAP_HOST}
 userdn=${LDAP_USER}
 password=${LDAP_PASSWORD}
 search.base=${LDAP_SEARCH_BASE}
 search.filter=${LDAP_SEARCH_FILTER}
+auto.enabled=true
+auto.verified=true
 EOF
 }
 
@@ -61,6 +60,10 @@ pipelinePath=/data/xnat/pipeline
 prearchivePath=/data/xnat/prearchive
 initialized=true
 EOF
+
+  if [ -n "${LDAP_HOST}" ]; then
+    echo "enabledProviders=[\"ldap\",\"localdb\"]" >> /data/xnat/home/config/prefs-init.ini
+  fi
 }
 
 generate_smtp_config() {

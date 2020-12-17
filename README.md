@@ -13,6 +13,21 @@ versions are supported.
 This repository provides two ways of running development versions of XNAT,
 via Docker Compose or Kubernetes.
 
+## Building the Docker image
+
+The `docker-compose.yaml` file contains the necessary information to build
+the Docker image. There is one argument to the Docker image build,
+`$XNAT_VERSION`. The `Dockerfile` leverages a multi-stage build process
+that clones the `xnat-web` repository and builds from source. The version
+of `xnat-web` cloned depends on `$XNAT_VERSION`. `$XNAT_VERSION` may be a
+tag or branch.
+
+To build the Docker image run:
+
+```
+$ docker-compose build
+```
+
 ## Docker Compose
 
 To start the compose stack run:

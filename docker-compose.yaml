@@ -1,8 +1,11 @@
 version: "3.5"
 services:
   xnat:
-    build: .
-    image: ghcr.io/brown-bnc/xnat:1.7.6
+    build:
+      context: .
+      args:
+        XNAT_VERSION: 1.8.0-TIP-RC3
+    image: ghcr.io/brown-bnc/xnat:1.8.0-TIP-RC3
     ports:
       - "8000:8000"
       - "8080:8080"

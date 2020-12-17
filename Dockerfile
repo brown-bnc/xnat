@@ -1,6 +1,21 @@
+ARG XNAT_VERSION=1.7.6
+
+FROM openjdk:8-jdk-slim as build
+
+ARG XNAT_VERSION
+
+RUN apt-get update && apt-get install -y \
+    git
+
+RUN cd /root \
+  && git clone --depth 1 --branch "${XNAT_VERSION}" https://bitbucket.org/xnatdev/xnat-web
+
+WORKDIR /root/xnat-web
+RUN ./gradlew clean war
+
 FROM tomcat:7-jdk8-openjdk-slim
 
-ARG XNAT_VERSION=1.7.6
+ARG XNAT_VERSION
 
 RUN apt-get update && apt-get install -y \
     curl \
@@ -21,11 +36,11 @@ RUN mkdir -p \
     /data/xnat/prearchive \
     /data/xnat/dicom-export
 
+COPY --from=build "/root/xnat-web/build/libs/xnat-web-${XNAT_VERSION}.war" "${CATALINA_HOME}/webapps/ROOT.war"
 RUN mkdir -p "${CATALINA_HOME}/webapps/ROOT" \
     && cd "${CATALINA_HOME}/webapps/ROOT" \
-    && curl -sLo ROOT.war "https://api.bitbucket.org/2.0/repositories/xnatdev/xnat-web/downloads/xnat-web-${XNAT_VERSION}.war" \
-    && jar xf ROOT.war \
-    && rm ROOT.war
+    && jar xf ../ROOT.war \
+    && rm ../ROOT.war
 
 RUN cd /data/xnat/home/plugins \
     && curl -sLO "https://github.com/brown-bnc/ldap-auth-plugin/releases/download/v1.0.1/xnat-ldap-auth-plugin-1.0.0.jar"

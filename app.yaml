@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: xnat
-        image: ghcr.io/brown-bnc/xnat:1.7.6
+        image: ghcr.io/brown-bnc/xnat:1.8.0-TIP-RC3
         envFrom:
         - configMapRef:
             name: app-config

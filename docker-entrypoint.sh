@@ -64,16 +64,28 @@ EOF
   if [ -n "${LDAP_HOST}" ]; then
     echo "enabledProviders=[\"ldap\",\"localdb\"]" >> /data/xnat/home/config/prefs-init.ini
   fi
+
+  if [ -z "${XNAT_SMTP_HOSTNAME}" ] || [ -z "${XNAT_SMTP_USER}" ] \
+  || [ -z "${XNAT_SMTP_PASSWORD}" ] || [ -z "${XNAT_SMTP_PORT}" ] \
+  || [ -z "${XNAT_SMTP_AUTH}" ] || [ -z "${XNAT_SMTP_START_TLS}" ]; then
+    echo "emailVerification=false" >> /data/xnat/home/config/prefs-init.ini
+  fi
 }
 
 generate_smtp_config() {
   if [ -z "${XNAT_SMTP_HOSTNAME}" ] || [ -z "${XNAT_SMTP_USER}" ] \
   || [ -z "${XNAT_SMTP_PASSWORD}" ] || [ -z "${XNAT_SMTP_PORT}" ] \
   || [ -z "${XNAT_SMTP_AUTH}" ] || [ -z "${XNAT_SMTP_START_TLS}" ]; then
+    cat >> /data/xnat/home/config/prefs-init.ini << EOF
+
+[notifications]
+smtpEnabled=false
+EOF
     return
   fi
 
   cat >> /data/xnat/home/config/prefs-init.ini << EOF
+
 [notifications]
 hostname=${XNAT_SMTP_HOSTNAME}
 username=${XNAT_SMTP_USER}

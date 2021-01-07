@@ -20,6 +20,8 @@ configMapGenerator:
   - POSTGRES_DB=xnat
   - POSTGRES_USER=xnat
   - POSTGRES_PASSWORD=xnat
-secretGenerator:
-- name: ldap-config
-  env: ldap.env
+# NOTE (BNR): Uncomment the following lines to enable LDAP
+#secretGenerator:
+#- name: ldap-config
+#  files:
+#  - ldap-provider.properties

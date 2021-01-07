@@ -105,10 +105,21 @@ access your development XNAT deployment.
 
 ## LDAP
 
-If you desire LDAP authentication, copy `ldap.env.example` to `ldap.env`
-and load your LDAP configuration. Then uncomment the `ldap-config` section
-in the `kustomization.yaml` file. Similarly, uncomment the `ldap-config`
-environment section in `app.yaml` and start the service as above.
+Multiple unique LDAP providers are supported. Each LDAP authentication
+properties file must be mounted in the `/data/xnat/home/config/auth`
+directory. The process varies depending on whether or not you're deploying
+with Kubernetes or Docker Swarm.
+
+If deploying with Kubernetes, the LDAP authentication properties files may
+be specified as either a `ConfigMap` or `Secret` object. The `ConfigMap` or
+`Secret` must then be referenced as a volume, and mounted in the container.
+
+If deploying with Docker Swarm, add the LDAP authentication properties
+files as a volume at `/data/xnat/home/config/auth` in the Docker container.
+
+Examples are provided for both Kubernetes and Docker Swarm. Uncomment the
+LDAP sections in `app.yaml` and `kustomization.yaml` for Kubernetes.
+Uncomment the LDAP section in `docker-compose.yaml` for Docker Swarm.
 
 ## Automatic Initialization
 
@@ -117,6 +128,13 @@ If you want to skip the initialization page on first launch, provide both
 username/password will still be `admin:admin`. If you've provided an LDAP
 configuration, the automatic initialization will enable your LDAP provider.
 
+## Manual Configuration
+
+You do not have to rely on the config generation rules detailed above to
+configure XNAT. `/data/xnat/home/config` is exposed as a volume. You may
+add your custom configs in that directory using the standard volume mount
+mechanisms of Kubernetes or Docker Swarm. An example is not provided.
+
 ## TODO
 * [x] Trim down the `Dockerfile` to bare minimum necessary
 * [x] Build and test the image using Docker
@@ -124,6 +142,7 @@ configuration, the automatic initialization will enable your LDAP provider.
 * [x] Create Kubernetes deployment manifest for XNAT
 * [x] Deploy to minikube for test
 * [x] Deploy to SciDMZ to for test
+* [x] Multiple unique LDAP providers
 * [ ] Configure TrueNAS storage mounts in the cluster
 * [x] Configure Postgres storage for metadata
 * [ ] Document the process

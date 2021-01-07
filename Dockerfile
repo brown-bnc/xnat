@@ -60,7 +60,7 @@ RUN mkdir -p "${CATALINA_HOME}/webapps/ROOT" \
 RUN cd /data/xnat/home/plugins \
     && curl -sLO "https://bitbucket.org/xnatx/ldap-auth-plugin/downloads/xnat-ldap-auth-plugin-1.0.0.jar"
 
-COPY ./docker-entrypoint.sh "/usr/local/bin/docker-entrypoint.sh"
+COPY docker-entrypoint.sh "/usr/local/bin/docker-entrypoint.sh"
 
 # NOTE (BNR): Ports have the following use:
 #  8000 - Catalina debug port, only used if debug is set to true

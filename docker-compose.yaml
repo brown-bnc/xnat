@@ -1,8 +1,11 @@
 version: "3.5"
 services:
   xnat:
-    build: .
-    image: ghcr.io/brown-bnc/xnat:1.7.6
+    build:
+      context: .
+      args:
+        XNAT_VERSION: 1.8.0-TIP-RC3
+    image: ghcr.io/brown-bnc/xnat:1.8.0-TIP-RC3
     ports:
       - "8000:8000"
       - "8080:8080"
@@ -13,11 +16,11 @@ services:
       POSTGRES_DB: "xnat"
       POSTGRES_USER: "xnat"
       POSTGRES_PASSWORD: "xnat"
-      LDAP_HOST: "${LDAP_HOST}"
-      LDAP_USER: "${LDAP_USER}"
-      LDAP_PASSWORD: "${LDAP_PASSWORD}"
-      LDAP_SEARCH_BASE: "${LDAP_SEARCH_BASE}"
-      LDAP_SEARCH_FILTER: "${LDAP_SEARCH_FILTER}"
+      XNAT_SITE_URL: "http://xnat.local"
+      XNAT_ADMIN_EMAIL: "admin@xnat.local"
+# NOTE (BNR): Uncomment the following lines to enable LDAP
+#    volumes:
+#      - "${PWD}/ldap-provider.properties:/data/xnat/home/config/auth/ldap-provider.properties"
   postgres:
     image: postgres:9
     environment:

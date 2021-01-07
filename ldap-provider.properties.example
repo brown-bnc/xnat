@@ -1,0 +1,10 @@
+name=
+provider.id=ldap
+auth.method=ldap
+address=
+userdn=
+password=
+search.base=
+search.filter=
+auto.enabled=true
+auto.verified=true

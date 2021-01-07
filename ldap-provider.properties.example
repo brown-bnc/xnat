@@ -1,5 +1,5 @@
 name=
-provider.id=brownldap
+provider.id=ldap
 auth.method=ldap
 address=
 userdn=

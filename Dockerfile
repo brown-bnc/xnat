@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y \
     git
 
 RUN cd /root \
-  && git clone --depth 1 --branch "${XNAT_VERSION}" https://bitbucket.org/xnatdev/xnat-web
+  && git clone --branch "${XNAT_VERSION}" https://bitbucket.org/xnatdev/xnat-web
 
 WORKDIR /root/xnat-web
 RUN ./gradlew clean war
@@ -48,7 +48,7 @@ RUN mkdir -p \
     /data/xnat/pipeline \
     /data/xnat/prearchive \
     /data/xnat/dicom-export
-    
+
 COPY ldap-provider.properties.example /data/xnat/home/config/auth/ldap-provider.properties.example
 VOLUME ["/data/xnat/home/config", "/data/xnat/home/config/auth"]
 

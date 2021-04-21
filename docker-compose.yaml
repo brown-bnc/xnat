@@ -4,8 +4,8 @@ services:
     build:
       context: .
       args:
-        XNAT_VERSION: 1.8.0-TIP-RC3
-    image: ghcr.io/brown-bnc/xnat:1.8.0-TIP-RC3
+        XNAT_VERSION: 1.8.1
+    image: ghcr.io/brown-bnc/xnat:1.8.1
     ports:
       - "8000:8000"
       - "8080:8080"
@@ -22,7 +22,7 @@ services:
 #    volumes:
 #      - "${PWD}/ldap-provider.properties:/data/xnat/home/config/auth/ldap-provider.properties"
   postgres:
-    image: postgres:9
+    image: postgres:10
     environment:
       POSTGRES_DB: "xnat"
       POSTGRES_USER: "xnat"

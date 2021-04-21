@@ -2,7 +2,7 @@
 # ARGS
 #   Common build arguments
 #-----------------------------------------------------------------------------
-ARG XNAT_VERSION=1.7.6
+ARG XNAT_VERSION=1.8.1
 
 #-----------------------------------------------------------------------------
 # BUILD
@@ -48,6 +48,7 @@ RUN mkdir -p \
     /data/xnat/pipeline \
     /data/xnat/prearchive \
     /data/xnat/dicom-export
+    
 COPY ldap-provider.properties.example /data/xnat/home/config/auth/ldap-provider.properties.example
 VOLUME ["/data/xnat/home/config", "/data/xnat/home/config/auth"]
 

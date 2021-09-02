@@ -2,7 +2,7 @@
 # ARGS
 #   Common build arguments
 #-----------------------------------------------------------------------------
-ARG XNAT_VERSION=1.8.1
+ARG XNAT_VERSION=1.8.2.2
 
 #-----------------------------------------------------------------------------
 # BUILD
@@ -25,7 +25,7 @@ RUN ./gradlew clean war
 # APPLICATION
 #   Runs the XNAT web application
 #-----------------------------------------------------------------------------
-FROM tomcat:7-jdk8-openjdk-slim
+FROM tomcat:9-jdk8-openjdk-slim
 
 ARG XNAT_VERSION
 

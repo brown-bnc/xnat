@@ -4,8 +4,8 @@ services:
     build:
       context: .
       args:
-        XNAT_VERSION: 1.8.2.2
-    image: ghcr.io/brown-bnc/xnat:1.8.2.2
+        XNAT_VERSION: 1.8.3
+    image: ghcr.io/brown-bnc/xnat:1.8.3
     ports:
       - "8000:8000"
       - "8080:8080"

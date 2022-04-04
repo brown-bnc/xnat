@@ -1,13 +1,12 @@
 # XNAT Cluster
 
-This repository contains the files necessary to build, and deploy Brown
-University's instance of XNAT to the SciDMZ cluster.
+This repository contains the files necessary to build, and test-deploy Brown
+University's instance of XNAT to the SciDMZ cluster. Deployment to the cluster
+is managed in [this repo](https://github.com/brown-ccv/k8s-deploy-bke)
 
-XNAT does not provide a Docker image for XNAT itself (though they do
-provide a lot of Docker images that work with XNAT). The `Dockerfile`
-builds XNAT as it's used at Brown University.
+The `Dockerfile` builds XNAT as it's used at Brown University.
 
-XNAT requires Apache Tomcat version 7, JDK 1.8, and Postgresql 9. No other
+XNAT requires Apache Tomcat version 9, JDK 1.8, and Postgresql 10. No other
 versions are supported.
 
 This repository provides two ways of running development versions of XNAT,
@@ -134,17 +133,5 @@ You do not have to rely on the config generation rules detailed above to
 configure XNAT. `/data/xnat/home/config` is exposed as a volume. You may
 add your custom configs in that directory using the standard volume mount
 mechanisms of Kubernetes or Docker Swarm. An example is not provided.
-
-## TODO
-* [x] Trim down the `Dockerfile` to bare minimum necessary
-* [x] Build and test the image using Docker
-* [x] Create a repository, and deployer service account in the DTR
-* [x] Create Kubernetes deployment manifest for XNAT
-* [x] Deploy to minikube for test
-* [x] Deploy to SciDMZ to for test
-* [x] Multiple unique LDAP providers
-* [ ] Configure TrueNAS storage mounts in the cluster
-* [x] Configure Postgres storage for metadata
-* [ ] Document the process
 
 [1]: https://minikube.sigs.k8s.io/docs/start/

@@ -1,16 +1,10 @@
 #-----------------------------------------------------------------------------
-# ARGS
-#   Common build arguments
-#-----------------------------------------------------------------------------
-ARG XNAT_VERSION=1.8.3
-
-#-----------------------------------------------------------------------------
 # BUILD
 #   Build the XNAT web artifact from source
 #-----------------------------------------------------------------------------
 FROM openjdk:8-jdk-slim as build
 
-ARG XNAT_VERSION
+ENV XNAT_VERSION=1.8.4.1
 
 RUN apt-get update && apt-get install -y \
     git
@@ -27,7 +21,7 @@ RUN ./gradlew clean war
 #-----------------------------------------------------------------------------
 FROM tomcat:9-jdk8-openjdk-slim
 
-ARG XNAT_VERSION
+ENV XNAT_VERSION=1.8.4.1
 
 RUN apt-get update && apt-get install -y \
     curl \

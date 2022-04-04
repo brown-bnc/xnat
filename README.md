@@ -1,19 +1,26 @@
 # XNAT Cluster
 
-This repository contains the files necessary to build, and deploy Brown
-University's instance of XNAT to the SciDMZ cluster.
+This repository contains the files necessary to build, and test-deploy Brown
+University's instance of XNAT to the SciDMZ cluster. 
 
-XNAT does not provide a Docker image for XNAT itself (though they do
-provide a lot of Docker images that work with XNAT). The `Dockerfile`
-builds XNAT as it's used at Brown University.
+The `Dockerfile` builds XNAT as it's used at Brown University.
 
-XNAT requires Apache Tomcat version 7, JDK 1.8, and Postgresql 9. No other
+XNAT requires Apache Tomcat version 9, JDK 1.8, and Postgresql 10. No other
 versions are supported.
 
 This repository provides two ways of running development versions of XNAT,
-via Docker Compose or Kubernetes.
+via Docker Compose or Kubernetes. Neither the `kustomization.yaml` nor the `docker-compose.yaml` provided in this repository are used in production. They were used only for testing purposes.
+Our deployment of the production instance in done via kubernetes and managed in [this repo](https://github.com/brown-ccv/k8s-deploy-bke)
 
-## Building the Docker image
+## Routine updates and GitHub Actions
+
+There is a GitHub Action that builds the `Dockerfile`. After merging to the `main` branch, please tag a new release. The release name will be used as the tag for the image. The practice is to align with the version of xnat being used. For instance, release number 1.8.4, meanse we used XNAT version 1.8.4. If a patch is needed on our image for an already tagged version, just spell the patch. For instance `1.8.4-OIFH-plugin`
+
+## Manual building/testing
+
+Typically not necessary, unless you are just learning how all of this works. We have a QA environment for testing in [this repo](https://github.com/brown-ccv/k8s-deploy-bke)
+
+### Building the Docker image
 
 The `docker-compose.yaml` file contains the necessary information to build
 the Docker image. There is one argument to the Docker image build,
@@ -28,7 +35,7 @@ To build the Docker image run:
 $ docker-compose build
 ```
 
-## Docker Compose
+### Docker Compose
 
 To start the compose stack run:
 
@@ -36,7 +43,7 @@ To start the compose stack run:
 $ docker-compose up
 ```
 
-## Kubernetes
+### Kubernetes
 
 First you must install minikube. See [this guide][1] for more details. I
 used `brew` on macOS to install minikube. Once minikube is installed, start
@@ -134,17 +141,5 @@ You do not have to rely on the config generation rules detailed above to
 configure XNAT. `/data/xnat/home/config` is exposed as a volume. You may
 add your custom configs in that directory using the standard volume mount
 mechanisms of Kubernetes or Docker Swarm. An example is not provided.
-
-## TODO
-* [x] Trim down the `Dockerfile` to bare minimum necessary
-* [x] Build and test the image using Docker
-* [x] Create a repository, and deployer service account in the DTR
-* [x] Create Kubernetes deployment manifest for XNAT
-* [x] Deploy to minikube for test
-* [x] Deploy to SciDMZ to for test
-* [x] Multiple unique LDAP providers
-* [ ] Configure TrueNAS storage mounts in the cluster
-* [x] Configure Postgres storage for metadata
-* [ ] Document the process
 
 [1]: https://minikube.sigs.k8s.io/docs/start/

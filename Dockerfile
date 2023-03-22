@@ -5,10 +5,8 @@
 FROM openjdk:8-jdk-slim as build
 
 # CAUTION: XNAT VERSION for this stage, make sure to also update next stage!!
-ENV XNAT_VERSION=1.8.6.1
-ENV org.gradle.daemon=true
-ENV org.gradle.jvmargs="-Xmx2560m -XX:MaxPermSize=512m -XX:HeapDumpOnOutOfMemoryError"
-ENV CATALINA_OPTS="-Xms256m -Xmx4g"
+ENV XNAT_VERSION=1.8.7
+ENV JAVA_OPTS="-Xmx2560m -XX:+HeapDumpOnOutOfMemoryError"
 
 RUN apt-get update && apt-get install -y \
     git
@@ -17,7 +15,7 @@ RUN cd /root \
   && git clone --branch "${XNAT_VERSION}" https://bitbucket.org/xnatdev/xnat-web
 
 WORKDIR /root/xnat-web
-RUN ./gradlew clean war
+RUN ./gradlew --no-daemon clean war
 
 #-----------------------------------------------------------------------------
 # APPLICATION
@@ -25,9 +23,7 @@ RUN ./gradlew clean war
 #-----------------------------------------------------------------------------
 FROM tomcat:9-jdk8-openjdk-slim
 
-ENV XNAT_VERSION=1.8.6.1
-ENV org.gradle.daemon=true
-ENV org.gradle.jvmargs=-Xmx2560m
+ENV XNAT_VERSION=1.8.7
 
 RUN apt-get update && apt-get install -y \
     curl \

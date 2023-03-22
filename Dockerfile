@@ -5,9 +5,10 @@
 FROM openjdk:8-jdk-slim as build
 
 # CAUTION: XNAT VERSION for this stage, make sure to also update next stage!!
-ENV XNAT_VERSION=1.8.7
+ENV XNAT_VERSION=1.8.6.1
 ENV org.gradle.daemon=true
-ENV org.gradle.jvmargs=-Xmx2560m
+ENV org.gradle.jvmargs="-Xmx2560m -XX:MaxPermSize=512m -XX:HeapDumpOnOutOfMemoryError"
+ENV CATALINA_OPTS="-Xms256m -Xmx4g"
 
 RUN apt-get update && apt-get install -y \
     git
@@ -24,7 +25,7 @@ RUN ./gradlew clean war
 #-----------------------------------------------------------------------------
 FROM tomcat:9-jdk8-openjdk-slim
 
-ENV XNAT_VERSION=1.8.7
+ENV XNAT_VERSION=1.8.6.1
 ENV org.gradle.daemon=true
 ENV org.gradle.jvmargs=-Xmx2560m
 

@@ -5,7 +5,8 @@
 FROM openjdk:8-jdk-slim as build
 
 # CAUTION: XNAT VERSION for this stage, make sure to also update next stage!!
-ENV XNAT_VERSION=1.8.4.1
+ENV XNAT_VERSION=1.8.7.1
+ENV JAVA_OPTS="-Xmx2560m -XX:+HeapDumpOnOutOfMemoryError"
 
 RUN apt-get update && apt-get install -y \
     git
@@ -14,7 +15,7 @@ RUN cd /root \
   && git clone --branch "${XNAT_VERSION}" https://bitbucket.org/xnatdev/xnat-web
 
 WORKDIR /root/xnat-web
-RUN ./gradlew clean war
+RUN ./gradlew --no-daemon clean war
 
 #-----------------------------------------------------------------------------
 # APPLICATION
@@ -22,7 +23,7 @@ RUN ./gradlew clean war
 #-----------------------------------------------------------------------------
 FROM tomcat:9-jdk8-openjdk-slim
 
-ENV XNAT_VERSION=1.8.4.1
+ENV XNAT_VERSION=1.8.7.1
 
 RUN apt-get update && apt-get install -y \
     curl \
@@ -56,8 +57,8 @@ RUN mkdir -p "${CATALINA_HOME}/webapps/ROOT" \
 # Install LDAP and XSYNC plugins. The versions need to be compatible with the version of XNAT
 RUN cd /data/xnat/home/plugins \
     && curl -sLO "https://bitbucket.org/xnatx/ldap-auth-plugin/downloads/xnat-ldap-auth-plugin-1.0.0.jar" \
-    && curl -sLO "https://api.bitbucket.org/2.0/repositories/xnatdev/xsync/downloads/xsync-plugin-all-1.4.0.jar" \
-    && curl -sLO "https://bitbucket.org/icrimaginginformatics/ohif-viewer-xnat-plugin/downloads/ohif-viewer-3.2.0-XNAT-1.8.0.jar"
+    && curl -sLO "https://api.bitbucket.org/2.0/repositories/xnatdev/xsync/downloads/xsync-plugin-all-1.5.0.jar" \
+    && curl -sLO "https://bitbucket.org/icrimaginginformatics/ohif-viewer-xnat-plugin/downloads/ohif-viewer-3.5.0.jar"
 
 COPY docker-entrypoint.sh "/usr/local/bin/docker-entrypoint.sh"
 

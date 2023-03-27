@@ -3,13 +3,13 @@ services:
   xnat:
     build:
       context: .
-    image: ghcr.io/brown-bnc/xnat:1.8.4.1
+    image: ghcr.io/brown-bnc/xnat:1.8.7.1
     ports:
       - "8000:8000"
       - "8080:8080"
       - "8104:8104"
     environment:
-      CATALINA_OPTS: "-Xms128m -Xmx1024m"
+      CATALINA_OPTS: "-Xms256m -Xmx4g"
       POSTGRES_HOST: "postgres"
       POSTGRES_DB: "xnat"
       POSTGRES_USER: "xnat"

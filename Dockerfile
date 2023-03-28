@@ -56,9 +56,9 @@ RUN mkdir -p "${CATALINA_HOME}/webapps/ROOT" \
 
 # Install LDAP and XSYNC plugins. The versions need to be compatible with the version of XNAT
 RUN cd /data/xnat/home/plugins \
-    && curl -sLO "https://bitbucket.org/xnatx/ldap-auth-plugin/downloads/xnat-ldap-auth-plugin-1.0.0.jar" \
-    && curl -sLO "https://api.bitbucket.org/2.0/repositories/xnatdev/xsync/downloads/xsync-plugin-all-1.5.0.jar" \
-    && curl -sLO "https://bitbucket.org/icrimaginginformatics/ohif-viewer-xnat-plugin/downloads/ohif-viewer-3.5.0.jar"
+    && curl -fLO "https://bitbucket.org/xnatx/ldap-auth-plugin/downloads/xnat-ldap-auth-plugin-1.0.0.jar" \
+    && curl -fLO "https://api.bitbucket.org/2.0/repositories/xnatdev/xsync/downloads/xsync-plugin-all-1.5.0.jar" \
+    && curl -fLO "https://bitbucket.org/icrimaginginformatics/ohif-viewer-xnat-plugin/downloads/ohif-viewer-3.5.0-XNAT-1.8.7.jar"
 
 COPY docker-entrypoint.sh "/usr/local/bin/docker-entrypoint.sh"
 

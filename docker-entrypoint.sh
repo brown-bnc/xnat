@@ -103,7 +103,6 @@ export_catalina_opts() {
 }
 
 main() {
-  echo "Entrypoint script is running..."
   generate_xnat_conf
   generate_prefs_init
   export_catalina_opts

@@ -35,7 +35,7 @@ generate_prefs_init() {
 
   local email_verification='true'
   local auth_providers='["localdb"]'
-  local auth_configs=(/data/xnat/home/config/auth/!(ldap-provider.properties.example))
+  local auth_configs=($(find /data/xnat/home/config/auth/ -type f -not -name 'ldap-provider.properties.example'))
   local provider_id=''
 
   if [ -z "${XNAT_SMTP_HOSTNAME}" ] || [ -z "${XNAT_SMTP_USER}" ] \
@@ -103,6 +103,7 @@ export_catalina_opts() {
 }
 
 main() {
+  echo "Entrypoint script is running..."
   generate_xnat_conf
   generate_prefs_init
   export_catalina_opts

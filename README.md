@@ -128,6 +128,10 @@ Examples are provided for both Kubernetes and Docker Swarm. Uncomment the
 LDAP sections in `app.yaml` and `kustomization.yaml` for Kubernetes.
 Uncomment the LDAP section in `docker-compose.yaml` for Docker Swarm.
 
+For an example of an LDAP provider configuration file, see `ldap-provider.properties.example`.
+
+For more details on setting up custom auth providers, see XNAT's documentation here: https://wiki.xnat.org/documentation/configuring-authentication-providers
+
 ## Automatic Initialization
 
 If you want to skip the initialization page on first launch, provide both

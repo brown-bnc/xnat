@@ -35,7 +35,7 @@ generate_prefs_init() {
 
   local email_verification='true'
   local auth_providers='["localdb"]'
-  local auth_configs=($(find /data/xnat/home/config/auth/ -type f -not -name 'ldap-provider.properties.example'))
+  local auth_configs=($(find /data/xnat/home/config/auth/ -type f -name "*.properties"))
   local provider_id=''
 
   if [ -z "${XNAT_SMTP_HOSTNAME}" ] || [ -z "${XNAT_SMTP_USER}" ] \

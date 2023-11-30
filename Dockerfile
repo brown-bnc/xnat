@@ -45,7 +45,6 @@ RUN mkdir -p \
     /data/xnat/prearchive \
     /data/xnat/dicom-export
 
-COPY ldap-provider.properties.example /data/xnat/home/config/auth/ldap-provider.properties.example
 VOLUME ["/data/xnat/home/config", "/data/xnat/home/config/auth"]
 
 COPY --from=build "/root/xnat-web/build/libs/xnat-web-${XNAT_VERSION}.war" "${CATALINA_HOME}/webapps/ROOT.war"

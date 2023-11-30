@@ -35,7 +35,6 @@ generate_prefs_init() {
 
   local email_verification='true'
   local auth_providers='["localdb"]'
-  #local auth_configs=($(find /data/xnat/home/config/auth/ -type f -name "*.properties"))
   local auth_configs=( /data/xnat/home/config/auth/*.properties )
   local provider_id=''
 

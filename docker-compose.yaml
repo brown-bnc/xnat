@@ -17,8 +17,8 @@ services:
       XNAT_SITE_URL: "http://xnat.local"
       XNAT_ADMIN_EMAIL: "admin@xnat.local"
 # NOTE (BNR): Uncomment the following lines to enable LDAP
-    # volumes:
-    #   - "${PWD}/brownldap-provider.properties:/data/xnat/home/config/auth/brownldap-provider.properties"
+    volumes:
+      - "${PWD}/brownldap-provider.properties:/data/xnat/home/config/auth/brownldap-provider.properties"
   postgres:
     image: postgres:10
     environment:

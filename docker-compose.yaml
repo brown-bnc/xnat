@@ -3,7 +3,7 @@ services:
   xnat:
     build:
       context: .
-    image: ghcr.io/brown-bnc/xnat:1.8.7.1
+    image: xnat
     ports:
       - "8000:8000"
       - "8080:8080"
@@ -17,8 +17,8 @@ services:
       XNAT_SITE_URL: "http://xnat.local"
       XNAT_ADMIN_EMAIL: "admin@xnat.local"
 # NOTE (BNR): Uncomment the following lines to enable LDAP
-#    volumes:
-#      - "${PWD}/ldap-provider.properties:/data/xnat/home/config/auth/ldap-provider.properties"
+    # volumes:
+    #   - "${PWD}/brownldap-provider.properties:/data/xnat/home/config/auth/brownldap-provider.properties"
   postgres:
     image: postgres:10
     environment:

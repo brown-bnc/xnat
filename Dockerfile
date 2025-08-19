@@ -35,7 +35,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN apt-get update && apt-get install -y \
     curl \
-    unzip
+    unzip \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p \
     /data/xnat/archive \

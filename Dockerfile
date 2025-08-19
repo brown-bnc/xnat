@@ -25,6 +25,8 @@ FROM tomcat:9-jdk8-openjdk-slim
 
 ENV XNAT_VERSION=1.9.1.1
 
+ENV CATALINA_OPTS="-Djava.awt.headless=true"
+
 RUN apt-get update && apt-get install -y \
     curl \
     unzip

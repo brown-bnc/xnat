@@ -25,9 +25,18 @@ FROM tomcat:9-jdk8-openjdk-slim
 
 ENV XNAT_VERSION=1.9.1.1
 
+ENV JAVA_TOOL_OPTIONS="-Djava.awt.headless=true"
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      libfreetype6 \
+      fontconfig \
+      fonts-dejavu-core \
+  && rm -rf /var/lib/apt/lists/*
+
 RUN apt-get update && apt-get install -y \
     curl \
-    unzip
+    unzip \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p \
     /data/xnat/archive \

@@ -23,7 +23,7 @@ RUN ./gradlew --no-daemon clean war
 #-----------------------------------------------------------------------------
 FROM tomcat:9-jdk8-openjdk-slim
 
-ENV XNAT_VERSION=1.9.1.1
+ENV XNAT_VERSION=1.9.2.3
 
 ENV JAVA_TOOL_OPTIONS="-Djava.awt.headless=true"
 

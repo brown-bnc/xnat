@@ -5,7 +5,7 @@
 FROM openjdk:8-jdk-slim as build
 
 # CAUTION: XNAT VERSION for this stage, make sure to also update next stage!!
-ENV XNAT_VERSION=1.9.1.1
+ENV XNAT_VERSION=1.9.2.3
 ENV JAVA_OPTS="-Xmx2560m -XX:+HeapDumpOnOutOfMemoryError"
 
 RUN apt-get update && apt-get install -y \
@@ -23,7 +23,7 @@ RUN ./gradlew --no-daemon clean war
 #-----------------------------------------------------------------------------
 FROM tomcat:9-jdk8-openjdk-slim
 
-ENV XNAT_VERSION=1.9.1.1
+ENV XNAT_VERSION=1.9.2.3
 
 ENV JAVA_TOOL_OPTIONS="-Djava.awt.headless=true"
 

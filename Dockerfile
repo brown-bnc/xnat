@@ -5,7 +5,7 @@
 FROM eclipse-temurin:8-jdk-jammy as build
 
 # CAUTION: XNAT VERSION for this stage, make sure to also update next stage!!
-ENV XNAT_VERSION=1.9.2.3
+ENV XNAT_VERSION=1.9.3.3
 ENV JAVA_OPTS="-Xmx2560m -XX:+HeapDumpOnOutOfMemoryError"
 
 RUN apt-get update && apt-get install -y \

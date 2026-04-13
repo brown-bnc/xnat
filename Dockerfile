@@ -63,13 +63,13 @@ RUN mkdir -p "${CATALINA_HOME}/webapps/ROOT" \
     && rm ../ROOT.war
 
 # Install LDAP and XSYNC plugins. The versions need to be compatible with the version of XNAT
-#    && curl -fLO "https://bitbucket.org/xnatx/pipeline_engine_plugin/downloads/pipeline_engine_ui-1.2.0-xpl.jar" \ 
-#    && curl -fLO "https://bitbucket.org/xnatdev/container-service/downloads/container-service-3.8.0-fat.jar"
 
 RUN cd /data/xnat/home/plugins \
     && curl -fLO "https://bitbucket.org/xnatx/ldap-auth-plugin/downloads/ldap-auth-plugin-1.2.1.jar" \
     && curl -fLO "https://bitbucket.org/icrimaginginformatics/ohif-viewer-xnat-plugin/downloads/ohif-viewer-3.7.0-XNAT-1.8.10.jar" \
-    && curl -fLO "https://bitbucket.org/xnatdev/dicom-query-retrieve/downloads/dicom-query-retrieve-2.1.0-xpl.jar" 
+    && curl -fLO "https://bitbucket.org/xnatdev/dicom-query-retrieve/downloads/dicom-query-retrieve-2.1.0-xpl.jar" \
+    && curl -fLO "https://bitbucket.org/xnatx/pipeline_engine_plugin/downloads/pipeline_engine_ui-1.2.0-xpl.jar" \ 
+    && curl -fLO "https://bitbucket.org/xnatdev/container-service/downloads/container-service-3.8.0-fat.jar"
     
 COPY docker-entrypoint.sh "/usr/local/bin/docker-entrypoint.sh"
 

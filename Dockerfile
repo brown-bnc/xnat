@@ -23,7 +23,7 @@ RUN ./gradlew --no-daemon clean war
 #-----------------------------------------------------------------------------
 FROM tomcat:9-jdk8-temurin-jammy
 
-ENV XNAT_VERSION=1.9.2.3
+ENV XNAT_VERSION=1.9.3.3
 
 ENV JAVA_TOOL_OPTIONS="-Djava.awt.headless=true"
 

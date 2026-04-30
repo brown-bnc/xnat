@@ -2,7 +2,7 @@
 # BUILD
 #   Build the XNAT web artifact from source
 #-----------------------------------------------------------------------------
-FROM eclipse-temurin:8-jdk-focal as build
+FROM eclipse-temurin:21-jdk as build
 
 # CAUTION: XNAT VERSION for this stage, make sure to also update next stage!!
 ENV XNAT_VERSION=1.10.0
@@ -21,7 +21,7 @@ RUN ./gradlew --no-daemon clean war
 # APPLICATION
 #   Runs the XNAT web application
 #-----------------------------------------------------------------------------
-FROM tomcat:9-jdk8-temurin-focal
+FROM tomcat:10.1-jdk21-temurin-jammy
 
 ENV XNAT_VERSION=1.10.0
 

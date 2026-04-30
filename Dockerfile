@@ -21,7 +21,7 @@ RUN ./gradlew --no-daemon clean war
 # APPLICATION
 #   Runs the XNAT web application
 #-----------------------------------------------------------------------------
-FROM tomcat:10.1-jdk21-temurin-jammy
+FROM tomcat:9-jdk8-temurin-focal
 
 ENV XNAT_VERSION=1.10.0
 

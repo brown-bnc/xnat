@@ -2,10 +2,10 @@
 # BUILD
 #   Build the XNAT web artifact from source
 #-----------------------------------------------------------------------------
-FROM openjdk:8-jdk-slim as build
+FROM eclipse-temurin:8-jdk-focal as build
 
 # CAUTION: XNAT VERSION for this stage, make sure to also update next stage!!
-ENV XNAT_VERSION=1.9.2.3
+ENV XNAT_VERSION=1.9.3.3
 ENV JAVA_OPTS="-Xmx2560m -XX:+HeapDumpOnOutOfMemoryError"
 
 RUN apt-get update && apt-get install -y \
@@ -21,9 +21,9 @@ RUN ./gradlew --no-daemon clean war
 # APPLICATION
 #   Runs the XNAT web application
 #-----------------------------------------------------------------------------
-FROM tomcat:9-jdk8-openjdk-slim
+FROM tomcat:9-jdk8-temurin-focal
 
-ENV XNAT_VERSION=1.9.2.3
+ENV XNAT_VERSION=1.9.3.3
 
 ENV JAVA_TOOL_OPTIONS="-Djava.awt.headless=true"
 
@@ -63,11 +63,13 @@ RUN mkdir -p "${CATALINA_HOME}/webapps/ROOT" \
     && rm ../ROOT.war
 
 # Install LDAP and XSYNC plugins. The versions need to be compatible with the version of XNAT
+
 RUN cd /data/xnat/home/plugins \
     && curl -fLO "https://bitbucket.org/xnatx/ldap-auth-plugin/downloads/ldap-auth-plugin-1.2.1.jar" \
     && curl -fLO "https://bitbucket.org/icrimaginginformatics/ohif-viewer-xnat-plugin/downloads/ohif-viewer-3.7.0-XNAT-1.8.10.jar" \
-    && curl -fLO "https://bitbucket.org/xnatdev/dicom-query-retrieve/downloads/dicom-query-retrieve-2.1.0-xpl.jar"
-
+    && curl -fLO "https://bitbucket.org/xnatdev/dicom-query-retrieve/downloads/dicom-query-retrieve-2.1.0-xpl.jar" \
+    && curl -fLO "https://bitbucket.org/xnatx/pipeline_engine_plugin/downloads/pipeline_engine_ui-1.2.0-xpl.jar" \ 
+    && curl -fLO "https://bitbucket.org/xnatdev/container-service/downloads/container-service-3.8.0-fat.jar"
     
 COPY docker-entrypoint.sh "/usr/local/bin/docker-entrypoint.sh"
 

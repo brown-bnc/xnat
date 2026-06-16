@@ -2,10 +2,10 @@
 # BUILD
 #   Build the XNAT web artifact from source
 #-----------------------------------------------------------------------------
-FROM eclipse-temurin:8-jdk-focal as build
+FROM eclipse-temurin:21-jdk as build
 
 # CAUTION: XNAT VERSION for this stage, make sure to also update next stage!!
-ENV XNAT_VERSION=1.9.3.3
+ENV XNAT_VERSION=1.10.0
 ENV JAVA_OPTS="-Xmx2560m -XX:+HeapDumpOnOutOfMemoryError"
 
 RUN apt-get update && apt-get install -y \
@@ -21,9 +21,9 @@ RUN ./gradlew --no-daemon clean war
 # APPLICATION
 #   Runs the XNAT web application
 #-----------------------------------------------------------------------------
-FROM tomcat:9-jdk8-temurin-focal
+FROM tomcat:9-jdk21-temurin
 
-ENV XNAT_VERSION=1.9.3.3
+ENV XNAT_VERSION=1.10.0
 
 ENV JAVA_TOOL_OPTIONS="-Djava.awt.headless=true"
 
@@ -69,7 +69,7 @@ RUN cd /data/xnat/home/plugins \
     && curl -fLO "https://bitbucket.org/icrimaginginformatics/ohif-viewer-xnat-plugin/downloads/ohif-viewer-3.7.0-XNAT-1.8.10.jar" \
     && curl -fLO "https://bitbucket.org/xnatdev/dicom-query-retrieve/downloads/dicom-query-retrieve-2.1.0-xpl.jar" \
     && curl -fLO "https://bitbucket.org/xnatx/pipeline_engine_plugin/downloads/pipeline_engine_ui-1.2.0-xpl.jar" \ 
-    && curl -fLO "https://bitbucket.org/xnatdev/container-service/downloads/container-service-3.8.0-fat.jar"
+    && curl -fLO "https://bitbucket.org/xnatdev/container-service/downloads/container-service-3.8.1-fat.jar"
     
 COPY docker-entrypoint.sh "/usr/local/bin/docker-entrypoint.sh"
 

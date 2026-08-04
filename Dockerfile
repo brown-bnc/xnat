@@ -46,18 +46,23 @@ ENV JAVA_TOOL_OPTIONS="-Djava.awt.headless=true"
 # -----------------------------------------------------------------------
 RUN set -eux; \
     SECURITY_FILE="${JAVA_HOME}/conf/security/java.security"; \
-    if ! grep -q 'TLS_RSA_\*' "$SECURITY_FILE"; then \
-      echo "ERROR: TLS_RSA_* entry not found in jdk.tls.disabledAlgorithms in $SECURITY_FILE" >&2; \
-      exit 1; \
-    fi; \
-    sed -i -E 's/TLS_RSA_\*,[[:space:]]*//g; s/,[[:space:]]*TLS_RSA_\*//g' "$SECURITY_FILE"; \
-    if grep -q 'TLS_RSA_\*' "$SECURITY_FILE"; then \
-      echo "ERROR: Failed to remove TLS_RSA_* entry from jdk.tls.disabledAlgorithms in $SECURITY_FILE" >&2; \
-      exit 1; \
-    fi; \
-    echo "jdk.tls.disabledAlgorithms after removing TLS_RSA_* (legacy LDAPS compatibility):"; \
-    grep -A 5 '^jdk.tls.disabledAlgorithms' "$SECURITY_FILE"
-
+    echo "JAVA_HOME=${JAVA_HOME}"; \
+    java -version; \
+    test -f "${SECURITY_FILE}"; \
+    echo "Before modification:"; \
+    grep -n -A4 '^jdk\.tls\.disabledAlgorithms=' "${SECURITY_FILE}"; \
+    grep -Fq 'TLS_RSA_*' "${SECURITY_FILE}" || { \
+        echo "ERROR: TLS_RSA_* was not found in ${SECURITY_FILE}" >&2; \
+        exit 1; \
+    }; \
+    sed -i 's/, TLS_RSA_\*/,/' "${SECURITY_FILE}"; \
+    echo "After modification:"; \
+    grep -n -A4 '^jdk\.tls\.disabledAlgorithms=' "${SECURITY_FILE}"; \
+    if grep -Fq 'TLS_RSA_*' "${SECURITY_FILE}"; then \
+        echo "ERROR: TLS_RSA_* remains in ${SECURITY_FILE}" >&2; \
+        exit 1; \
+    fi
+    
 RUN apt-get update && apt-get install -y --no-install-recommends \
       libfreetype6 \
       fontconfig \

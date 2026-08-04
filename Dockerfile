@@ -27,6 +27,37 @@ ENV XNAT_VERSION=1.10.0
 
 ENV JAVA_TOOL_OPTIONS="-Djava.awt.headless=true"
 
+# -----------------------------------------------------------------------
+# LDAP/LDAPS COMPATIBILITY (JDK 21)
+#   Our LDAP server is a legacy system that only supports the
+#   TLS_RSA_WITH_AES_256_CBC_SHA cipher suite over LDAPS. Starting with
+#   JDK 21, all static RSA key exchange cipher suites (TLS_RSA_*) are
+#   disabled by default via jdk.tls.disabledAlgorithms in java.security,
+#   which breaks the LDAPS handshake with that server.
+#
+#   To restore connectivity, we remove ONLY the "TLS_RSA_*" wildcard
+#   entry from jdk.tls.disabledAlgorithms below. We intentionally do NOT
+#   touch any other restriction in this file (e.g. SHA-1 handshake
+#   signature restrictions, jdk.certpath.disabledAlgorithms, protocol
+#   version restrictions), so overall TLS security posture is otherwise
+#   unchanged. The build fails loudly if the entry can't be found/removed
+#   so this workaround doesn't silently stop working on a base image
+#   update.
+# -----------------------------------------------------------------------
+RUN set -eux; \
+    SECURITY_FILE="${JAVA_HOME}/conf/security/java.security"; \
+    if ! grep -q 'TLS_RSA_\*' "$SECURITY_FILE"; then \
+      echo "ERROR: TLS_RSA_* entry not found in jdk.tls.disabledAlgorithms in $SECURITY_FILE" >&2; \
+      exit 1; \
+    fi; \
+    sed -i -E 's/TLS_RSA_\*,[[:space:]]*//g; s/,[[:space:]]*TLS_RSA_\*//g' "$SECURITY_FILE"; \
+    if grep -q 'TLS_RSA_\*' "$SECURITY_FILE"; then \
+      echo "ERROR: Failed to remove TLS_RSA_* entry from jdk.tls.disabledAlgorithms in $SECURITY_FILE" >&2; \
+      exit 1; \
+    fi; \
+    echo "jdk.tls.disabledAlgorithms after removing TLS_RSA_* (legacy LDAPS compatibility):"; \
+    grep -A 5 '^jdk.tls.disabledAlgorithms' "$SECURITY_FILE"
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
       libfreetype6 \
       fontconfig \

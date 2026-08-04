@@ -51,18 +51,28 @@ RUN set -eux; \
     test -f "${SECURITY_FILE}"; \
     echo "Before modification:"; \
     grep -n -A4 '^jdk\.tls\.disabledAlgorithms=' "${SECURITY_FILE}"; \
-    grep -Fq 'TLS_RSA_*' "${SECURITY_FILE}" || { \
-        echo "ERROR: TLS_RSA_* was not found in ${SECURITY_FILE}" >&2; \
-        exit 1; \
-    }; \
-    sed -i 's/, TLS_RSA_\*/,/' "${SECURITY_FILE}"; \
+    sed -n '/^jdk\.tls\.disabledAlgorithms=/,/^[^[:space:]#]/p' \
+        "${SECURITY_FILE}" \
+        | grep -Fq 'TLS_RSA_*' || { \
+            echo "ERROR: TLS_RSA_* was not found in jdk.tls.disabledAlgorithms" >&2; \
+            exit 1; \
+        }; \
+    sed -i 's/, TLS_RSA_\*,/,/' "${SECURITY_FILE}"; \
     echo "After modification:"; \
     grep -n -A4 '^jdk\.tls\.disabledAlgorithms=' "${SECURITY_FILE}"; \
-    if grep -Fq 'TLS_RSA_*' "${SECURITY_FILE}"; then \
-        echo "ERROR: TLS_RSA_* remains in ${SECURITY_FILE}" >&2; \
+    if sed -n '/^jdk\.tls\.disabledAlgorithms=/,/^[^[:space:]#]/p' \
+        "${SECURITY_FILE}" \
+        | grep -Fq 'TLS_RSA_*'; then \
+        echo "ERROR: TLS_RSA_* remains in jdk.tls.disabledAlgorithms" >&2; \
+        exit 1; \
+    fi; \
+    if sed -n '/^jdk\.tls\.disabledAlgorithms=/,/^[^[:space:]#]/p' \
+        "${SECURITY_FILE}" \
+        | grep -Fq ',,'; then \
+        echo "ERROR: Invalid duplicate comma in jdk.tls.disabledAlgorithms" >&2; \
         exit 1; \
     fi
-    
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
       libfreetype6 \
       fontconfig \

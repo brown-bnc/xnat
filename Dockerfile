@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
     git
 
 RUN cd /root \
-  && git clone --branch "${XNAT_VERSION}" https://bitbucket.org/xnatdev/xnat-web
+    && git clone --branch "${XNAT_VERSION}" https://bitbucket.org/xnatdev/xnat-web
 
 WORKDIR /root/xnat-web
 RUN ./gradlew --no-daemon clean war
@@ -28,10 +28,10 @@ ENV XNAT_VERSION=1.10.0
 ENV JAVA_TOOL_OPTIONS="-Djava.awt.headless=true"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      libfreetype6 \
-      fontconfig \
-      fonts-dejavu-core \
-  && rm -rf /var/lib/apt/lists/*
+    libfreetype6 \
+    fontconfig \
+    fonts-dejavu-core \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update && apt-get install -y \
     curl \
@@ -70,7 +70,7 @@ RUN cd /data/xnat/home/plugins \
     && curl -fLO "https://bitbucket.org/xnatdev/dicom-query-retrieve/downloads/dicom-query-retrieve-3.0.0-xpl.jar" \
     && curl -fLO "https://bitbucket.org/xnatx/pipeline_engine_plugin/downloads/pipeline_engine_ui-1.2.0-xpl.jar" \ 
     && curl -fLO "https://bitbucket.org/xnatdev/container-service/downloads/container-service-3.8.1-fat.jar"
-    
+
 COPY docker-entrypoint.sh "/usr/local/bin/docker-entrypoint.sh"
 
 # NOTE (BNR): Ports have the following use:

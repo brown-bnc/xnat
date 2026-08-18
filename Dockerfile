@@ -25,8 +25,6 @@ FROM tomcat:9-jdk21-temurin
 
 ENV XNAT_VERSION=1.10.0
 
-ENV JAVA_TOOL_OPTIONS="-Djava.awt.headless=true"
-
 # -----------------------------------------------------------------------
 # LDAP/LDAPS COMPATIBILITY (JDK 21)
 #   Our LDAP server is a legacy system that only supports the
@@ -35,43 +33,23 @@ ENV JAVA_TOOL_OPTIONS="-Djava.awt.headless=true"
 #   disabled by default via jdk.tls.disabledAlgorithms in java.security,
 #   which breaks the LDAPS handshake with that server.
 #
-#   To restore connectivity, we remove ONLY the "TLS_RSA_*" wildcard
-#   entry from jdk.tls.disabledAlgorithms below. We intentionally do NOT
-#   touch any other restriction in this file (e.g. SHA-1 handshake
-#   signature restrictions, jdk.certpath.disabledAlgorithms, protocol
-#   version restrictions), so overall TLS security posture is otherwise
-#   unchanged. The build fails loudly if the entry can't be found/removed
-#   so this workaround doesn't silently stop working on a base image
-#   update.
+#   Rather than patching java.security in the base image in place, we
+#   layer jdk-security-overrides.conf on top of it via the JVM's own
+#   "additional security properties" mechanism
+#   (-Djava.security.properties=<file>). That file only redefines
+#   jdk.tls.disabledAlgorithms, with the "TLS_RSA_*" entry removed and
+#   everything else copied verbatim from this base image's default,
+#   so no other restriction (SHA-1 handshake signatures,
+#   jdk.certpath.disabledAlgorithms, protocol versions, ...) is
+#   touched. See that file's header for how to check whether upstream
+#   has changed the default list on a base image bump.
+#
+#   (Named .conf rather than .properties so it isn't swallowed by the
+#   blanket *.properties rule in .gitignore, which exists to keep
+#   generated/secret config out of the repo.)
 # -----------------------------------------------------------------------
-RUN set -eux; \
-    SECURITY_FILE="${JAVA_HOME}/conf/security/java.security"; \
-    echo "JAVA_HOME=${JAVA_HOME}"; \
-    java -version; \
-    test -f "${SECURITY_FILE}"; \
-    echo "Before modification:"; \
-    grep -n -A4 '^jdk\.tls\.disabledAlgorithms=' "${SECURITY_FILE}"; \
-    sed -n '/^jdk\.tls\.disabledAlgorithms=/,/^[^[:space:]#]/p' \
-        "${SECURITY_FILE}" \
-        | grep -Fq 'TLS_RSA_*' || { \
-            echo "ERROR: TLS_RSA_* was not found in jdk.tls.disabledAlgorithms" >&2; \
-            exit 1; \
-        }; \
-    sed -i 's/, TLS_RSA_\*,/,/' "${SECURITY_FILE}"; \
-    echo "After modification:"; \
-    grep -n -A4 '^jdk\.tls\.disabledAlgorithms=' "${SECURITY_FILE}"; \
-    if sed -n '/^jdk\.tls\.disabledAlgorithms=/,/^[^[:space:]#]/p' \
-        "${SECURITY_FILE}" \
-        | grep -Fq 'TLS_RSA_*'; then \
-        echo "ERROR: TLS_RSA_* remains in jdk.tls.disabledAlgorithms" >&2; \
-        exit 1; \
-    fi; \
-    if sed -n '/^jdk\.tls\.disabledAlgorithms=/,/^[^[:space:]#]/p' \
-        "${SECURITY_FILE}" \
-        | grep -Fq ',,'; then \
-        echo "ERROR: Invalid duplicate comma in jdk.tls.disabledAlgorithms" >&2; \
-        exit 1; \
-    fi
+COPY jdk-security-overrides.conf /etc/xnat/jdk-security-overrides.conf
+ENV JAVA_TOOL_OPTIONS="-Djava.awt.headless=true -Djava.security.properties=/etc/xnat/jdk-security-overrides.conf"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
       libfreetype6 \

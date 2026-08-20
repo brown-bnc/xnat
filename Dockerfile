@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
     git
 
 RUN cd /root \
-  && git clone --branch "${XNAT_VERSION}" https://bitbucket.org/xnatdev/xnat-web
+    && git clone --branch "${XNAT_VERSION}" https://bitbucket.org/xnatdev/xnat-web
 
 WORKDIR /root/xnat-web
 RUN ./gradlew --no-daemon clean war
@@ -26,10 +26,10 @@ FROM tomcat:9-jdk21-temurin
 ENV XNAT_VERSION=1.10.0
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      libfreetype6 \
-      fontconfig \
-      fonts-dejavu-core \
-  && rm -rf /var/lib/apt/lists/*
+    libfreetype6 \
+    fontconfig \
+    fonts-dejavu-core \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update && apt-get install -y \
     curl \

@@ -67,7 +67,8 @@ RUN cd /data/xnat/home/plugins \
     && curl -fLO "https://xnat.org/files/ohif-viewer-xnat-plugin/ohif-viewer-3.8.0-fat.jar" \
     && curl -fLO "https://bitbucket.org/xnatdev/dicom-query-retrieve/downloads/dicom-query-retrieve-3.0.0-xpl.jar" \
     && curl -fLO "https://bitbucket.org/xnatx/pipeline_engine_plugin/downloads/pipeline_engine_ui-1.2.0-xpl.jar" \
-    && curl -fLO "https://bitbucket.org/xnatdev/container-service/downloads/container-service-3.8.1-fat.jar"
+    && curl -fLO "https://bitbucket.org/xnatdev/container-service/downloads/container-service-3.8.1-fat.jar" \
+    && curl -fLO "https://github.com/NrgXnat/batch-transfer-plugin/releases/download/v1.1.1/batch-transfer-1.1.1.jar"
     
 COPY docker-entrypoint.sh "/usr/local/bin/docker-entrypoint.sh"
 

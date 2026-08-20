@@ -49,7 +49,6 @@ ENV XNAT_VERSION=1.10.0
 #   generated/secret config out of the repo.)
 # -----------------------------------------------------------------------
 COPY jdk-security-overrides.conf /etc/xnat/jdk-security-overrides.conf
-ENV JAVA_TOOL_OPTIONS="-Djava.awt.headless=true -Djava.security.properties=/etc/xnat/jdk-security-overrides.conf"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
       libfreetype6 \

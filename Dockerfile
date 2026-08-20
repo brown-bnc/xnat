@@ -25,31 +25,6 @@ FROM tomcat:9-jdk21-temurin
 
 ENV XNAT_VERSION=1.10.0
 
-# -----------------------------------------------------------------------
-# LDAP/LDAPS COMPATIBILITY (JDK 21)
-#   Our LDAP server is a legacy system that only supports the
-#   TLS_RSA_WITH_AES_256_CBC_SHA cipher suite over LDAPS. Starting with
-#   JDK 21, all static RSA key exchange cipher suites (TLS_RSA_*) are
-#   disabled by default via jdk.tls.disabledAlgorithms in java.security,
-#   which breaks the LDAPS handshake with that server.
-#
-#   Rather than patching java.security in the base image in place, we
-#   layer jdk-security-overrides.conf on top of it via the JVM's own
-#   "additional security properties" mechanism
-#   (-Djava.security.properties=<file>). That file only redefines
-#   jdk.tls.disabledAlgorithms, with the "TLS_RSA_*" entry removed and
-#   everything else copied verbatim from this base image's default,
-#   so no other restriction (SHA-1 handshake signatures,
-#   jdk.certpath.disabledAlgorithms, protocol versions, ...) is
-#   touched. See that file's header for how to check whether upstream
-#   has changed the default list on a base image bump.
-#
-#   (Named .conf rather than .properties so it isn't swallowed by the
-#   blanket *.properties rule in .gitignore, which exists to keep
-#   generated/secret config out of the repo.)
-# -----------------------------------------------------------------------
-COPY jdk-security-overrides.conf /etc/xnat/jdk-security-overrides.conf
-
 RUN apt-get update && apt-get install -y --no-install-recommends \
       libfreetype6 \
       fontconfig \

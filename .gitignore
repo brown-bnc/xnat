@@ -1,4 +1,7 @@
-xnat-conf.properties
+# Env
 .env
 ldap.env
+
+# Properties
+xnat-conf.properties
 *.properties

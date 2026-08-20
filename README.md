@@ -1,7 +1,7 @@
 # XNAT Cluster
 
 This repository contains the files necessary to build, and test-deploy Brown
-University's instance of XNAT to the SciDMZ cluster. 
+University's instance of XNAT to the SciDMZ cluster.
 
 The `Dockerfile` builds XNAT as it's used at Brown University.
 
@@ -31,16 +31,16 @@ tag or branch.
 
 To build the Docker image run:
 
-```
-$ docker-compose build
+```shell
+docker-compose build
 ```
 
 ### Docker Compose
 
 To start the compose stack run:
 
-```
-$ docker-compose up
+```shell
+docker-compose up
 ```
 
 ### Kubernetes
@@ -54,21 +54,21 @@ sure my manifests are compatible with my clusters. Make sure the driver
 you use matches your system configuration, and can support the nginx
 ingress controller.
 
-```
-$ minikube start --kubernetes-version=v1.18.10 --driver=hyperkit
+```shell
+minikube start --kubernetes-version=v1.18.10 --driver=hyperkit
 ```
 
 Once minikube has started, enable the ingress controller if you haven't
 already.
 
-```
-$ minikube addons enable ingress
+```shell
+minikube addons enable ingress
 ```
 
 To run the Kubernetes deployment run:
 
-```
-$ kubectl apply -k .
+```shell
+kubectl apply -k .
 ```
 
 This will set up XNAT with all the fixings including a local database.
@@ -82,8 +82,8 @@ XNAT: Kubernetes port-forwarding, curl, and `/etc/hosts`.
 Kubernetes offers a method of forwarding traffic to and from the cluster.
 With this we can proxy traffic to a service running inside the cluster.
 
-```
-$ kubectl port-forward svc/xnat 8080:80
+```shell
+kubectl port-forward svc/xnat 8080:80
 ```
 
 This command will forward `localhost:8080` traffic to the XNAT service
@@ -95,16 +95,16 @@ forces curl to resolve the address `xnat.local` to your minikube IP
 address. `xnat.local` is the name set up by the Kubernetes ingress, see
 `app.yaml` for more details.
 
-```
-$ curl -vL --resolve xnat.local:80:$(minikube ip) http://xnat.local
+```shell
+curl -vL --resolve xnat.local:80:$(minikube ip) http://xnat.local
 ```
 
 Lastly, if you're doing prolonged testing with XNAT you can update your
 hosts file to point `xnat.local` to your minikube IP address. This is
 basically what we did with the previous curl command, but permanent.
 
-```
-$ sudo sh -c "echo $(minikube ip) xnat.local >> /etc/hosts"
+```shell
+sudo sh -c "echo $(minikube ip) xnat.local >> /etc/hosts"
 ```
 
 After updating your hosts file you should be able to use `xnat.local` to
@@ -130,7 +130,7 @@ Uncomment the LDAP section in `docker-compose.yaml` for Docker Swarm.
 
 For an example of an LDAP provider configuration file, see `ldap-provider.properties.example`.
 
-For more details on setting up custom auth providers, see XNAT's documentation here: https://wiki.xnat.org/documentation/configuring-authentication-providers
+For more details on setting up custom auth providers, see [XNAT's documentation](https://wiki.xnat.org/documentation/configuring-authentication-providers).
 
 ## Automatic Initialization
 

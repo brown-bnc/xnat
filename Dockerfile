@@ -25,8 +25,6 @@ FROM tomcat:9-jdk21-temurin
 
 ENV XNAT_VERSION=1.10.0
 
-ENV JAVA_TOOL_OPTIONS="-Djava.awt.headless=true"
-
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libfreetype6 \
     fontconfig \
@@ -65,12 +63,13 @@ RUN mkdir -p "${CATALINA_HOME}/webapps/ROOT" \
 # Install LDAP and XSYNC plugins. The versions need to be compatible with the version of XNAT
 
 RUN cd /data/xnat/home/plugins \
-    && curl -fLO "https://bitbucket.org/xnatx/ldap-auth-plugin/downloads/ldap-auth-plugin-1.2.1.jar" \
+    && curl -fLO "https://bitbucket.org/xnatx/ldap-auth-plugin/downloads/ldap-auth-plugin-1.3.0.jar" \
     && curl -fLO "https://xnat.org/files/ohif-viewer-xnat-plugin/ohif-viewer-3.8.0-fat.jar" \
     && curl -fLO "https://bitbucket.org/xnatdev/dicom-query-retrieve/downloads/dicom-query-retrieve-3.0.0-xpl.jar" \
     && curl -fLO "https://bitbucket.org/xnatx/pipeline_engine_plugin/downloads/pipeline_engine_ui-1.2.0-xpl.jar" \
-    && curl -fLO "https://bitbucket.org/xnatdev/container-service/downloads/container-service-3.8.1-fat.jar"
-
+    && curl -fLO "https://bitbucket.org/xnatdev/container-service/downloads/container-service-3.8.1-fat.jar" \
+    && curl -fLO "https://github.com/NrgXnat/batch-transfer-plugin/releases/download/v1.1.1/batch-transfer-1.1.1.jar"
+    
 COPY docker-entrypoint.sh "/usr/local/bin/docker-entrypoint.sh"
 
 # NOTE (BNR): Ports have the following use:

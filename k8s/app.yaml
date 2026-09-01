@@ -34,6 +34,13 @@ spec:
               mountPath: /data/xnat/home/config/auth/oidc-provider.properties
               subPath: oidc-provider.properties
               readOnly: true
+          startupProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 60
           readinessProbe:
             httpGet:
               path: /

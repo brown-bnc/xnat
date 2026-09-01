@@ -93,7 +93,7 @@ This will set up XNAT with all the fixings, including a local database.
 Kubernetes offers a method of forwarding traffic to and from the cluster. This command will forward `localhost:8080` traffic to the XNAT service within the Kubernetes cluster. From there the service will forward the traffic to the deployment.
 
 ```shell
-kubectl port-forward svc/xnat 8080:80
+kubectl port-forward svc/local-xnat 8080:80
 ```
 
-You should now be able to use `xnat.local` to access your XNAT deployment.
+You should now be able to use `localhost:8080` to access your XNAT deployment.

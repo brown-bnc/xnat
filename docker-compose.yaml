@@ -28,4 +28,4 @@ services:
       - "5432:5432"
     env_file: ./k8s/.env
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U xnat -d xnat_test"]
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]

@@ -34,6 +34,14 @@ spec:
               mountPath: /data/xnat/home/config/auth/oidc-provider.properties
               subPath: oidc-provider.properties
               readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
       volumes:
         - name: auth-config
           secret:
@@ -58,22 +66,3 @@ spec:
       port: 8104
       targetPort: 8104
       protocol: TCP
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: xnat
-  labels:
-    app: xnat
-spec:
-  rules:
-    - host: xnat.local
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: xnat
-                port:
-                  name: http

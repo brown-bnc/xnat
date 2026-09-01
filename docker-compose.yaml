@@ -9,7 +9,7 @@ services:
       - "8000:8000"
       - "8080:8080"
       - "8104:8104"
-    env_file: .env
+    env_file: ./k8s/.env
     volumes:
       # Enable plugins
       - ./k8s/config/ldap-provider.properties:/data/xnat/home/config/auth/ldap-provider.properties

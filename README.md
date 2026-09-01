@@ -81,6 +81,8 @@ This will set up XNAT with all the fixings, including a local database.
 
 - `app.yaml` contains the manifests related to XNAT
 - `db.yaml` contains the manifests for the database.
+- `namespace.yaml` contains the manifest for the project's namespace
+  - This ensures the project never conflicts with any other locally running projects
 
 Kubernetes offers a method of forwarding traffic to and from the cluster. This command will forward `localhost:8080` traffic to the XNAT service within the Kubernetes cluster. From there the service will forward the traffic to the deployment.
 

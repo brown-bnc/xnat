@@ -26,14 +26,10 @@ FROM tomcat:9-jdk21-temurin
 # !CAUTION: XNAT VERSION for this stage, make it matches the previous stage!
 ENV XNAT_VERSION=1.10.0
 
-# TODO: Can we combine these installs?
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libfreetype6 \
     fontconfig \
     fonts-dejavu-core \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN apt-get update && apt-get install -y \
     curl \
     unzip \
     && rm -rf /var/lib/apt/lists/*

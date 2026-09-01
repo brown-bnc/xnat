@@ -1,11 +1,12 @@
+ARG XNAT_VERSION=1.10.0
+
 ###################################################################################################
 ### BUILD
 ### Build the XNAT web artifact from source
 ###################################################################################################
 FROM eclipse-temurin:21-jdk AS build
 
-# !CAUTION: XNAT VERSION for this stage, make sure it matches the next stage!
-ENV XNAT_VERSION=1.10.0
+ARG XNAT_VERSION
 ENV JAVA_OPTS="-Xmx2560m -XX:+HeapDumpOnOutOfMemoryError"
 
 # Clone the XNAT repository
@@ -23,8 +24,7 @@ RUN ./gradlew --no-daemon clean war
 ###################################################################################################
 FROM tomcat:9-jdk21-temurin
 
-# !CAUTION: XNAT VERSION for this stage, make it matches the previous stage!
-ENV XNAT_VERSION=1.10.0
+ARG XNAT_VERSION
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libfreetype6 \

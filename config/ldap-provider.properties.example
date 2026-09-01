@@ -1,5 +1,5 @@
-name=
-provider.id=ldap
+name=Brown LDAP
+provider.id=brownldap
 auth.method=ldap
 address=
 userdn=

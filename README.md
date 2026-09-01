@@ -71,6 +71,12 @@ minikube addons enable ingress
 
 #### Run the kubernetes deployment
 
+To build the docker image for Kubernetes run:
+
+```shell
+docker build -t xnat:local .
+```
+
 To run the Kubernetes deployment run:
 
 ```shell

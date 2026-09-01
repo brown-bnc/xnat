@@ -3,6 +3,8 @@ kind: Deployment
 metadata:
   name: postgres
 spec:
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: postgres
@@ -24,7 +26,8 @@ spec:
               name: db-data
       volumes:
         - name: db-data
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: db-data
 ---
 apiVersion: v1
 kind: Service
@@ -41,3 +44,14 @@ spec:
       port: 5432
       targetPort: 5432
       protocol: TCP
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: db-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

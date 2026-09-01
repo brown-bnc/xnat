@@ -9,11 +9,14 @@ services:
       - "8000:8000"
       - "8080:8080"
       - "8104:8104"
-    env_file: .env
+    env_file: ./k8s/.env
+    environment:
+      # NOTE: This overrides the value in the .env file
+      - XNAT_SITE_URL=https://localhost:8080
     volumes:
       # Enable plugins
-      - ./config/ldap-provider.properties:/data/xnat/home/config/auth/ldap-provider.properties
-      - ./config/oidc-provider.properties:/data/xnat/home/config/auth/oidc-provider.properties
+      - ./k8s/config/ldap-provider.properties:/data/xnat/home/config/auth/ldap-provider.properties
+      - ./k8s/config/oidc-provider.properties:/data/xnat/home/config/auth/oidc-provider.properties
     depends_on:
       postgres:
         condition: service_healthy
@@ -23,6 +26,6 @@ services:
     image: postgres:16
     ports:
       - "5432:5432"
-    env_file: .env
+    env_file: ./k8s/.env
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U xnat -d xnat_test"]

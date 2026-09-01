@@ -26,21 +26,18 @@ spec:
             - name: debug
               containerPort: 8000
           volumeMounts:
-            - name: ldap-config
+            - name: auth-config
               mountPath: /data/xnat/home/config/auth/ldap-provider.properties
               subPath: ldap-provider.properties
               readOnly: true
-            - name: oidc-config
+            - name: auth-config
               mountPath: /data/xnat/home/config/auth/oidc-provider.properties
               subPath: oidc-provider.properties
               readOnly: true
       volumes:
-        - name: ldap-config
+        - name: auth-config
           secret:
-            secretName: ldap-config
-        - name: oidc-config
-          secret:
-            secretName: oidc-config
+            secretName: auth-config
 ---
 apiVersion: v1
 kind: Service

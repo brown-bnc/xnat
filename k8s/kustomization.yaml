@@ -10,9 +10,7 @@ secretGenerator:
   - name: environment
     envs:
       - .env
-  - name: ldap-config
+  - name: auth-config
     files:
       - config/ldap-provider.properties
-  - name: oidc-config
-    files:
       - config/oidc-provider.properties

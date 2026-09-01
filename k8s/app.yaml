@@ -13,8 +13,8 @@ spec:
     spec:
       containers:
         - name: xnat
-          # TODO: How to configure this via local building?
-          # image: ghcr.io/brown-bnc/xnat:1.8.0-TIP-RC3
+          image: xnat:local
+          imagePullPolicy: Never
           envFrom:
             - secretRef:
                 name: environment
@@ -28,19 +28,19 @@ spec:
           volumeMounts:
             - name: ldap-config
               mountPath: /data/xnat/home/config/auth/ldap-provider.properties
-              subPath: brownldap-provider.properties
+              subPath: ldap-provider.properties
               readOnly: true
             - name: oidc-config
               mountPath: /data/xnat/home/config/auth/oidc-provider.properties
               subPath: oidc-provider.properties
               readOnly: true
-          volumes:
-            - name: ldap-config
-              secret:
-                secretName: ldap-config
-            - name: oidc-config
-              secret:
-                secretName: oidc-config
+      volumes:
+        - name: ldap-config
+          secret:
+            secretName: ldap-config
+        - name: oidc-config
+          secret:
+            secretName: oidc-config
 ---
 apiVersion: v1
 kind: Service

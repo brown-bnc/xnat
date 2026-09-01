@@ -1,6 +1,6 @@
 name: xnat
 services:
-  xnat:
+  xnat-web:
     # NOTE: Uncomment to test an already built image
     # image: ghcr.io/brown-bnc/xnat:1.10.1-batch-transfer
     build:
@@ -18,7 +18,7 @@ services:
       postgres:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "xnat.local:8000/"]
+      test: ["CMD", "curl", "localhost:8000/"]
   postgres:
     image: postgres:16
     ports:

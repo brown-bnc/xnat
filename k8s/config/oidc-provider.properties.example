@@ -1,0 +1,42 @@
+# Name displayed in the UI
+name=Brown SSO
+auth.method=openid
+provider.id=shibboleth
+
+# Site Settings
+siteUrl=https://xnat.bnc.brown.edu
+preEstablishedRedirUri=/openid-login
+
+# TODO: Can we use the button/example/something else to show a better link?
+# openid.shibboleth.link=<p>To sign-in using your Google credentials, please click on the button below.</p></p><p><a href="/openid-login?providerId=google"> <img src="/images/btn_google_signin_dark_normal_web.png" /> </a></p>
+openid.shibboleth.link=<a href="/openid-login?providerId=shibboleth">Sign in using Brown credentials</a>
+
+# shibboleth credentials and endpoints
+openid.shibboleth.clientId=
+openid.shibboleth.clientSecret=
+openid.shibboleth.accessTokenUri=https://sso.brown.edu/idp/profile/oidc/token
+openid.shibboleth.userAuthUri=https://sso.brown.edu/idp/profile/oidc/authorize
+openid.shibboleth.userInfoUri=https://sso.brown.edu/idp/profile/oidc/userinfo
+
+# Claims Mapping
+openid.shibboleth.scopes=openid,profile,email
+openid.shibboleth.emailProperty=email
+openid.shibboleth.givenNameProperty=given_name
+openid.shibboleth.familyNameProperty=family_name
+
+# Account Provisioning
+# Set to true to automatically enable new users (allow immediate login), false to require admin approval
+auto.enabled=true
+# Set to true to automatically verify new users, false to require email/admin verification
+auto.verified=true
+# Do NOT force the user creation process. User must match their legacy LDAP account to OIDC
+openid.shibboleth.forceUserCreate=false
+# Flag that sets if we should be checking email domains
+openid.shibboleth.shouldFilterEmailDomains=true
+openid.shibboleth.allowedEmailDomains=brown.edu
+# Flag to enable the PKCE support
+# TODO: We need to test to see if Shibboleth supports this. If so, keep it.
+openid.shibboleth.pkceEnabled=true
+# Default username pattern for the auth_user field of the xhbm_xdat_user_auth table
+# TODO: I have no idea what this does
+openid.shibboleth.usernamePattern=[providerId]-[sub]

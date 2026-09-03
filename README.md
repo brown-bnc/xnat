@@ -12,57 +12,69 @@ This repository provides two ways of running development versions of XNAT,
 via Docker Compose or Kubernetes. Neither the `kustomization.yaml` nor the `docker-compose.yaml` provided in this repository are used in production. They were used only for testing purposes.
 Our deployment of the production instance in done via kubernetes and managed in [this repo](https://github.com/brown-ccv/k8s-deploy-bke)
 
-## Routine updates and GitHub Actions
+## Image Versioning and Releases
 
-There is a GitHub Action that builds the `Dockerfile`. After merging to the `main` branch, please tag a new release. The release name will be used as the tag for the image. The practice is to align with the version of xnat being used. For instance, release number 1.8.4, meanse we used XNAT version 1.8.4. If a patch is needed on our image for an already tagged version, just spell the patch. For instance `1.8.4-OIFH-plugin`
+There is a GitHub Action that builds the `Dockerfile`. After merging to the `main` branch, please tag a new release. The release name will be used as the tag for the image. The practice is to align with the version of xnat being used. For instance, release number `1.8.4`, means we used XNAT version `1.8.4`. If a patch is needed on our image for an already tagged version, just spell the patch. For instance `1.8.4-OIFH-plugin` add the `OIFH-plugin` with XNAT version `1.8.4`.
 
-## Manual building/testing
+## Local Testing
 
-Typically not necessary, unless you are just learning how all of this works. We have a QA environment for testing in [this repo](https://github.com/brown-ccv/k8s-deploy-bke)
+### Automatic Initialization
 
-### Building the Docker image
+If you want to skip the initialization page on first launch, provide both `$XNAT_SITE_URL` and `$XNAT_ADMIN_EMAIL` when starting XNAT. The default username/password will still be `admin:admin`. If you've provided an LDAP configuration, the automatic initialization will enable your LDAP provider.
 
-The `docker-compose.yaml` file contains the necessary information to build
-the Docker image. There is one argument to the Docker image build,
-`$XNAT_VERSION`. The `Dockerfile` leverages a multi-stage build process
-that clones the `xnat-web` repository and builds from source. The version
-of `xnat-web` cloned depends on `$XNAT_VERSION`. `$XNAT_VERSION` may be a
-tag or branch.
+### Authentication Providers
+
+For more details on setting up custom auth providers, see [XNAT's documentation](https://wiki.xnat.org/documentation/configuring-authentication-providers).
+
+#### Authentication Providers: LDAP
+
+Multiple unique LDAP providers are supported. Each LDAP properties file must be mounted in the `/data/xnat/home/config/auth` directory.
+
+For an example of an LDAP provider configuration file, see [ldap-provider.properties.example`](./config/ldap-provider.properties.example).
+
+#### Authentication Providers: OIDC
+
+Each OIDC properties file must be mounted in the `/data/xnat/home/config/auth` directory.
+
+For an example of an OIDC provider configuration file, see [oidc-provider.properties.example`](./config/oidc-provider.properties.example).
+
+## Local Building & Deployments
+
+> [!IMPORTANT]
+> The QA and production instances of the application are deployed on Brown's infrastructure and managed in the [BKE repository](https://github.com/brown-ccv/k8s-deploy-bke). The methods listed below are intended solely for ensuring the image builds correctly.
+
+### Docker Compose Deployment
+
+The [docker-compose.yaml](./docker-compose.yaml) file contains the necessary information to build the Docker image and connect it to a locally running database. The XNAT application is built as the `xnat-web` service.
 
 To build the Docker image run:
 
 ```shell
+# Build the images
 docker-compose build
-```
-
-### Docker Compose
-
-To start the compose stack run:
-
-```shell
+# Start the compose stack
 docker-compose up
+# Bring down the compose stack
+docker-compose down
 ```
 
-### Kubernetes
+### Kubernetes Deployment
 
-First you must install minikube. See [this guide][1] for more details. I
-used `brew` on macOS to install minikube. Once minikube is installed, start
-it with the following command.
+#### Enabling Minikube
 
-Kubernetes version can be omitted, but I like to keep it there to make
-sure my manifests are compatible with my clusters. Make sure the driver
-you use matches your system configuration, and can support the nginx
-ingress controller.
+`minikube` is a useful tool for initializing a local instance of kubernetes. See [this guide](https://minikube.sigs.k8s.io/docs/start/) to get it set up. Once installed, start the cluster and ensure ingress controllers are enabled:
 
 ```shell
 minikube start --kubernetes-version=v1.18.10 --driver=hyperkit
+minikube addons enable ingress
 ```
 
-Once minikube has started, enable the ingress controller if you haven't
-already.
+#### Run the kubernetes deployment
+
+To build the docker image for Kubernetes run:
 
 ```shell
-minikube addons enable ingress
+docker build -t xnat:local .
 ```
 
 To run the Kubernetes deployment run:
@@ -71,79 +83,17 @@ To run the Kubernetes deployment run:
 kubectl apply -k .
 ```
 
-This will set up XNAT with all the fixings including a local database.
-`app.yaml` contains the manifests related to XNAT, `db.yaml` contains the
-manifests for the database.
+This will set up XNAT with all the fixings, including a local database.
 
-By default XNAT is configured as a `ClusterIp` service, meaning that XNAT
-does not expose any external addresses. There are three ways to connect to
-XNAT: Kubernetes port-forwarding, curl, and `/etc/hosts`.
+- `app.yaml` contains the manifests related to XNAT
+- `db.yaml` contains the manifests for the database.
+- `namespace.yaml` contains the manifest for the project's namespace
+  - This ensures the project never conflicts with any other locally running projects
 
-Kubernetes offers a method of forwarding traffic to and from the cluster.
-With this we can proxy traffic to a service running inside the cluster.
+Kubernetes offers a method of forwarding traffic to and from the cluster. This command will forward `localhost:8080` traffic to the XNAT service within the Kubernetes cluster. From there the service will forward the traffic to the deployment.
 
 ```shell
-kubectl port-forward svc/xnat 8080:80
+kubectl port-forward svc/local-xnat 8080:80
 ```
 
-This command will forward `localhost:8080` traffic to the XNAT service
-within the Kubernetes cluster. From there the service will forward the
-traffic to the deployment.
-
-If you want a quick sanity check, curl works great. The following command
-forces curl to resolve the address `xnat.local` to your minikube IP
-address. `xnat.local` is the name set up by the Kubernetes ingress, see
-`app.yaml` for more details.
-
-```shell
-curl -vL --resolve xnat.local:80:$(minikube ip) http://xnat.local
-```
-
-Lastly, if you're doing prolonged testing with XNAT you can update your
-hosts file to point `xnat.local` to your minikube IP address. This is
-basically what we did with the previous curl command, but permanent.
-
-```shell
-sudo sh -c "echo $(minikube ip) xnat.local >> /etc/hosts"
-```
-
-After updating your hosts file you should be able to use `xnat.local` to
-access your development XNAT deployment.
-
-## LDAP
-
-Multiple unique LDAP providers are supported. Each LDAP authentication
-properties file must be mounted in the `/data/xnat/home/config/auth`
-directory. The process varies depending on whether or not you're deploying
-with Kubernetes or Docker Swarm.
-
-If deploying with Kubernetes, the LDAP authentication properties files may
-be specified as either a `ConfigMap` or `Secret` object. The `ConfigMap` or
-`Secret` must then be referenced as a volume, and mounted in the container.
-
-If deploying with Docker Swarm, add the LDAP authentication properties
-files as a volume at `/data/xnat/home/config/auth` in the Docker container.
-
-Examples are provided for both Kubernetes and Docker Swarm. Uncomment the
-LDAP sections in `app.yaml` and `kustomization.yaml` for Kubernetes.
-Uncomment the LDAP section in `docker-compose.yaml` for Docker Swarm.
-
-For an example of an LDAP provider configuration file, see `ldap-provider.properties.example`.
-
-For more details on setting up custom auth providers, see [XNAT's documentation](https://wiki.xnat.org/documentation/configuring-authentication-providers).
-
-## Automatic Initialization
-
-If you want to skip the initialization page on first launch, provide both
-`$XNAT_SITE_URL` and `$XNAT_ADMIN_EMAIL` when starting XNAT. The default
-username/password will still be `admin:admin`. If you've provided an LDAP
-configuration, the automatic initialization will enable your LDAP provider.
-
-## Manual Configuration
-
-You do not have to rely on the config generation rules detailed above to
-configure XNAT. `/data/xnat/home/config` is exposed as a volume. You may
-add your custom configs in that directory using the standard volume mount
-mechanisms of Kubernetes or Docker Swarm. An example is not provided.
-
-[1]: https://minikube.sigs.k8s.io/docs/start/
+You should now be able to use `localhost:8080` to access your XNAT deployment.

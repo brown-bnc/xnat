@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: xnat
+spec:
+  selector:
+    matchLabels:
+      app: xnat
+  template:
+    metadata:
+      labels:
+        app: xnat
+    spec:
+      containers:
+        - name: xnat
+          image: xnat:local
+          imagePullPolicy: Never
+          envFrom:
+            - secretRef:
+                name: environment
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: dicom
+              containerPort: 8104
+            - name: debug
+              containerPort: 8000
+          volumeMounts:
+            - name: auth-config
+              mountPath: /data/xnat/home/config/auth/ldap-provider.properties
+              subPath: ldap-provider.properties
+              readOnly: true
+            - name: auth-config
+              mountPath: /data/xnat/home/config/auth/oidc-provider.properties
+              subPath: oidc-provider.properties
+              readOnly: true
+          startupProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 60
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+      volumes:
+        - name: auth-config
+          secret:
+            secretName: auth-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: xnat
+  labels:
+    app: xnat
+spec:
+  type: ClusterIP
+  selector:
+    app: xnat
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+      protocol: TCP
+    - name: dicom
+      port: 8104
+      targetPort: 8104
+      protocol: TCP

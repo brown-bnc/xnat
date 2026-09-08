@@ -108,14 +108,15 @@ docker compose up
 docker compose -f ./docker/docker-compose.yaml up
 ```
 
-Bringing the compose stack down will stop running the deployment:
+### Verifying the Deployment
 
-```shell
-# From this directory
-docker compose down
-# From the root directory
-docker compose -f ./docker/docker-compose.yaml down
-```
+1. Open XNAT at [http://localhost:8080](http://localhost:8080).
+2. Log in with the default administrator credentials: `admin` / `admin`.
+
+>[!NOTE]
+> The `XNAT_SITE_URL` and `XNAT_ADMIN_EMAIL` environment variables skip the first-launch initialization page. Without them, XNAT prompts for these values on first load.
+
+### Building the Deployment
 
 The Docker images can be built without running the deployment:
 
@@ -124,4 +125,15 @@ The Docker images can be built without running the deployment:
 docker compose build
 # From the root directory
 docker compose -f ./docker/docker-compose.yaml build
+```
+
+### Stopping the Deployment
+
+Bringing the compose stack down will stop running the deployment:
+
+```shell
+# From this directory
+docker compose down
+# From the root directory
+docker compose -f ./docker/docker-compose.yaml down
 ```

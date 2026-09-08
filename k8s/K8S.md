@@ -163,6 +163,14 @@ XNAT_ADMIN_EMAIL=admin@example.com
    kubectl port-forward svc/xnat 8080:80
    ```
 
+### Verifying the Deployment
+
+1. With the port-forward running from the previous step, open XNAT at [http://localhost:8080](http://localhost:8080).
+2. Log in with the default administrator credentials: `admin` / `admin`.
+
+>[!NOTE]
+> The `XNAT_SITE_URL` and `XNAT_ADMIN_EMAIL` environment variables skip the first-launch initialization page. Without them, XNAT prompts for these values on first load.
+
 ### Stopping the Deployment
 
 Deleting the kustomize will stop running the deployment

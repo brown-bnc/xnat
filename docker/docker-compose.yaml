@@ -1,18 +1,20 @@
 name: xnat
 services:
   xnat-web:
-    # NOTE: Uncomment this to test an already built image
-    # image: ghcr.io/brown-bnc/xnat:1.10.1-batch-transfer
     build:
-      context: ../Dockerfile
+      context: ..
+      dockerfile: Dockerfile
+    # NOTE: Comment out the "build" section and uncomment "image" to test an already built image
+    # image: ghcr.io/brown-bnc/xnat:1.10.1-batch-transfer
     ports:
       - "8000:8000"
       - "8080:8080"
       - "8104:8104"
     env_file: ./env/.env
     volumes:
-      # Enable plugins
+      # Enable the LDAP plugin
       - ./config/ldap-provider.properties:/data/xnat/home/config/auth/ldap-provider.properties
+      # Enable the OIDC plugin
       - ./config/oidc-provider.properties:/data/xnat/home/config/auth/oidc-provider.properties
     depends_on:
       postgres:

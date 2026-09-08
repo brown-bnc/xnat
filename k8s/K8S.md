@@ -12,6 +12,7 @@
 - `db.yaml` contains the manifests for the database.
 - `namespace.yaml` contains the manifest for the project's namespace
   - This ensures the project never conflicts with any other locally running projects
+- `kustomize.yaml`
 
 ## Setting up Kubernetes
 
@@ -110,7 +111,10 @@ XNAT_ADMIN_EMAIL=admin@example.com
 2. Applying the kustomize file will start running the deployment.
 
    ```shell
+   # From this directory
    kubectl apply -k .
+   # From the root directory
+   kubectl apply -k ./k8s
    ```
 
 3. Forward local traffic to/from the cluster
@@ -125,5 +129,8 @@ XNAT_ADMIN_EMAIL=admin@example.com
 Deleting the kustomize will stop running the deployment
 
 ```shell
+# From this directory
 kubectl delete -k .
+# From the root directory
+kubectl delete -k ./k8s
 ```

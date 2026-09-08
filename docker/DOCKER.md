@@ -4,34 +4,42 @@
 
 ### Folder Structure
 
-- **[docker-compose.yaml](./docker-compose.yaml):** Defines the containers that are a part of the XNAT local deployment
+- **[docker-compose.yaml](./docker-compose.yaml):** The services that are part of the XNAT application
   - *A more detailed explanation of the file is provided [below](#docker-compose-overview)*
-- **[.env.example](./env/.env.example):**: Defines the key/value pairs used to configure XNAT's runtime environment
-  - *The values in this example file are intentionally not provided. See [below](#setting-up-the-deployments-environment-variables) for setting up the environment correctly.*
-- **[ldap-provider.properties.example](./config/ldap-provider.properties.example):**: Defines the key/value pairs used to an LDAP authentication provider in XNAT
-  - *The values in this example file are intentionally not provided. See [below](#setting-up-the-deployments-authentication-providers) for setting up the provider correctly.*
-- **[oidc-provider.properties.example](./config/oidc-provider.properties.example):**: Defines the key/value pairs used to an OIDC authentication provider in XNAT
-  - *The values in this example file are intentionally not provided. See [below](#setting-up-the-deployments-authentication-providers) for setting up the provider correctly.*
+- **[.env.example](./env/.env.example):** The key/value pairs used to configure XNAT's runtime environment
+  - *See [below](#environment-variables) for setting up the environment correctly.*
+- **[ldap-provider.properties.example](./config/ldap-provider.properties.example):** The key/value pairs used to configure an LDAP authentication provider in XNAT
+  - *See [below](#ldap-provider) for setting up the provider correctly.*
+- **[oidc-provider.properties.example](./config/oidc-provider.properties.example):** The key/value pairs used to configure an OIDC authentication provider in XNAT
+  - *See [below](#oidc-provider) for setting up the provider correctly.*
 
 ### Docker Compose Overview
 
-<!-- TODO: Overview of the files/folders -->
-<!-- TODO: Overview of the docker compose file -->
+The compose file defines two services: `xnat-web` (the XNAT application) and `postgres` (its database).
 
-- The XNAT application is named `xnat-web`
-- XNAT's database is named `postgres`
+#### `xnat-web`
 
-- build
-- image
-- ports
-- env_file
-- volumes
-- depends_on
-- healthcheck
+- **`build`:** Build the image locally from the project's [Dockerfile](../Dockerfile)
+  - *Alternatively, `image` defines a prebuilt image to use*
+- **`ports`:** The `host`:`container` port mappings
+  - *Note how these ports match what's exposed in the project's [Dockerfile](../Dockerfile)*
+- **`env_file`:** The path of file(s) containing environment variables loaded into the container
+- **`volumes`:** The `host`:`container` path of file(s) mounted into the container
+  - *Adds the plugin config files*
+- **`depends_on`:** Tells the service to wait for the `postgres` service to pass its healthcheck before starting
+- **`healthcheck`:** The command used to determine whether the container is healthy
+  - *curls the website on localhost*
+
+#### `postgres`
+
+- **`image`:** The prebuilt postgres image to download and use
+- **`env_file`:** The path of file(s) containing environment variables loaded into the container
+- **`healthcheck`:** The command used to determine whether the container is healthy
+  - *Runs `postgres`'s internal healthcheck*
 
 ## Setting up Docker
 
-This deployment requires [Docker](https://www.docker.com/) with Docker Compose to run. Docker Desktop bundles both and is the tool recommended by the XNAT development team.
+This deployment requires [Docker](https://www.docker.com/) with Docker Compose to run. Docker Desktop bundles both and is the recommended tool.
 
 >[!NOTE]
 > Linux users may prefer [Docker Engine](https://docs.docker.com/engine/install/) with the [Compose plugin](https://docs.docker.com/compose/install/linux/) instead of Docker Desktop.
@@ -48,12 +56,12 @@ This deployment requires [Docker](https://www.docker.com/) with Docker Compose t
 
 ## Setting up the Deployment
 
-### Setting up the Deployment's Environment Variables
+### Environment Variables
 
 >[!WARNING]
 > Environment files contain sensitive credentials that should not be added to git source control
 
-1. The [.env.example](./env/.env) file should be copied and renamed `.env`.
+1. The [.env.example](./env/.env.example) file should be copied and renamed `.env`.
 2. Values for each key should be provided.
 
 The example values listed below are safe for local testing:
@@ -74,17 +82,17 @@ XNAT_SITE_URL=https://localhost:8080
 XNAT_ADMIN_EMAIL=admin@example.com
 ```
 
-### Setting up the Deployment's Authentication Providers
+### Authentication Providers
 
 >[!WARNING]
 > These files contain sensitive credentials that should not be added to git source control
 
-#### Setting up the Deployment's LDAP Provider
+#### LDAP Provider
 
 1. The [ldap-provider.properties.example](./config/ldap-provider.properties.example) file should be copied and renamed `ldap-provider.properties`.
 2. Values for each key should be provided according to the [plugin's documentation](https://wiki.xnat.org/xnat-tools/xnat-ldap-authentication-plugin).
 
-#### Setting up the Deployment's OIDC Provider
+#### OIDC Provider
 
 1. The [oidc-provider.properties.example](./config/oidc-provider.properties.example) file should be copied and renamed `oidc-provider.properties`.
 2. Values for each key should be provided according to the [plugin's documentation](https://wiki.xnat.org/xnat-tools/openid-authentication-plugin).
@@ -94,17 +102,26 @@ XNAT_ADMIN_EMAIL=admin@example.com
 Bringing the compose stack up will start running the deployment:
 
 ```shell
-docker-compose up
+# From this directory
+docker compose up
+# From the root directory
+docker compose -f ./docker/docker-compose.yaml up
 ```
 
 Bringing the compose stack down will stop running the deployment:
 
 ```shell
-docker-compose down
+# From this directory
+docker compose down
+# From the root directory
+docker compose -f ./docker/docker-compose.yaml down
 ```
 
 The Docker images can be built without running the deployment:
 
 ```shell
-docker-compose build
+# From this directory
+docker compose build
+# From the root directory
+docker compose -f ./docker/docker-compose.yaml build
 ```

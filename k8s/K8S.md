@@ -4,15 +4,54 @@
 
 ### Folder Structure
 
-### Kubernetes Overview
+- **[kustomization.yaml](./kustomization.yaml):** The Kustomize entrypoint that composes the deployment
+- **[namespace.yaml](./namespace.yaml):** The namespace isolating the deployment from other locally running projects
+- **[app.yaml](./app.yaml):** The manifests for the XNAT application
+- **[db.yaml](./db.yaml):** The manifests for the PostgreSQL database
+- **[.env.example](./env/.env.example):** The key/value pairs used to configure XNAT's runtime environment
+  - *See [below](#environment-variables) for setting up the environment correctly.*
+- **[ldap-provider.properties.example](./config/ldap-provider.properties.example):** The key/value pairs used to configure an LDAP authentication provider in XNAT
+  - *See [below](#ldap-provider) for setting up the provider correctly.*
+- **[oidc-provider.properties.example](./config/oidc-provider.properties.example):** The key/value pairs used to configure an OIDC authentication provider in XNAT
+  - *See [below](#oidc-provider) for setting up the provider correctly.*
 
-<!-- TODO: More detail here -->
+### Kustomize Overview
 
-- `app.yaml` contains the manifests related to XNAT
-- `db.yaml` contains the manifests for the database.
-- `namespace.yaml` contains the manifest for the project's namespace
-  - This ensures the project never conflicts with any other locally running projects
-- `kustomize.yaml`
+Kustomize composes the deployment from three manifests (`namespace.yaml`, `app.yaml`, `db.yaml`). It generates secrets from the `.env` and provider `.properties` files.
+
+#### `kustomization.yaml`
+
+- **`namespace`:** Applies the shared namespace to every resource in the deployment
+- **`resources`:** The manifest files included in the deployment
+- **`secretGenerator`:** Generates Secrets that the pods consume
+  - *`environment` — from `.env`, loaded into both containers as environment variables*
+  - *`auth-config` — from the LDAP and OIDC `.properties` files, mounted into the XNAT container*
+
+#### `namespace.yaml`
+
+- **`Namespace`:** Defines a named space that isolates the deployment's resources from other locally running projects.
+
+#### `app.yaml`
+
+- **`Deployment`:** Runs the locally built `xnat:local` image
+  - **`imagePullPolicy: Never`:** Forces Kubernetes to use the local image instead of pulling from a registry
+  - **`ports`:** The container ports exposed by XNAT
+    - *Note how these match what's exposed in the project's [Dockerfile](../Dockerfile)*
+  - **`envFrom`:** Loads environment variables from the generated `environment` Secret
+  - **`volumeMounts`:** Mounts the LDAP and OIDC properties files from the `auth-config` Secret
+  - **`startupProbe` / `readinessProbe` / `livenessProbe`:** The command used to determine whether the container is healthy
+    - *Sends an HTTP request to `/` on the container's `http` port*
+- **`Service`:** Defines the port mapping between the cluster and the container
+
+#### `db.yaml`
+
+- **`Deployment`:** Runs the prebuilt `postgres:16` image
+  - **`envFrom`:** Loads environment variables from the generated `environment` Secret
+  - **`volumeMounts`:** Mounts the `db-data` PersistentVolumeClaim at Postgres's data directory
+  - **`readinessProbe` / `livenessProbe`:** The command used to determine whether the pod is healthy
+    - *Runs `pg_isready` against the configured database*
+- **`Service`:** Defines the port mapping between the cluster and the container
+- **`PersistentVolumeClaim`:** Pre-defined storage request that survives pod restarts
 
 ## Setting up Kubernetes
 
@@ -57,7 +96,7 @@ This deployment requires [Docker](https://www.docker.com/) with Kubernetes enabl
 
 ## Setting up the Deployment
 
-### Setting up the Deployment's Environment Variables
+### Environment Variables
 
 >[!WARNING]
 > Environment files contain sensitive credentials that should not be added to git source control
@@ -83,17 +122,17 @@ XNAT_SITE_URL=https://localhost:8080
 XNAT_ADMIN_EMAIL=admin@example.com
 ```
 
-### Setting up the Deployment's Authentication Providers
+### Authentication Providers
 
 >[!WARNING]
 > These files contain sensitive credentials that should not be added to git source control
 
-#### Setting up the Deployment's LDAP Provider
+#### LDAP Provider
 
 1. The [ldap-provider.properties.example](./config/ldap-provider.properties.example) file should be copied and renamed `ldap-provider.properties`.
 2. Values for each key should be provided according to the [plugin's documentation](https://wiki.xnat.org/xnat-tools/xnat-ldap-authentication-plugin).
 
-#### Setting up the Deployment's OIDC Provider
+#### OIDC Provider
 
 1. The [oidc-provider.properties.example](./config/oidc-provider.properties.example) file should be copied and renamed `oidc-provider.properties`.
 2. Values for each key should be provided according to the [plugin's documentation](https://wiki.xnat.org/xnat-tools/openid-authentication-plugin).

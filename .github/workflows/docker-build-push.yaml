@@ -1,15 +1,15 @@
-# from https://docs.github.com/en/actions/guides/publishing-docker-images
+# Based off  https://docs.github.com/en/actions/guides/publishing-docker-images
 
-name: Build and PushContainer
+name: 🐳 Build and Push Container
 on:
   push:
     branches:
-      - 'main'
+      - "main"
     tags:
-      - '*'
-  pull_request:  
+      - "*"
+  pull_request:
     branches:
-      - 'main'
+      - "main"
 
 env:
   REGISTRY: ghcr.io

@@ -101,7 +101,7 @@ This deployment requires [Docker](https://www.docker.com/) with Kubernetes enabl
 >[!WARNING]
 > Environment files contain sensitive credentials that should not be added to git source control
 
-1. The [.env.example](./env/.env) file should be copied and renamed `.env`.
+1. The [.env.example](./env/.env.example) file should be copied and renamed `.env`.
 2. Values for each key should be provided.
 
 The example values listed below are safe for local testing:

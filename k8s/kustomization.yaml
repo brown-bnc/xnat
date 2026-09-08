@@ -8,7 +8,7 @@ resources:
 secretGenerator:
   - name: environment
     envs:
-      - .env
+      - env/.env
   - name: auth-config
     files:
       - config/ldap-provider.properties

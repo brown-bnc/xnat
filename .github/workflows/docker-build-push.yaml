@@ -13,7 +13,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  REPOSITORY: ${{ github.repository }}
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build_and_push:
@@ -37,7 +37,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v6
         with:
-          images: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
       - name: 🐳 Build and Push Docker Image
         uses: docker/build-push-action@v7
@@ -47,5 +47,5 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPOSITORY }}:buildcache
-          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPOSITORY }}:buildcache,mode=max
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max

@@ -36,7 +36,7 @@ The authentication providers available to users for logging into the portal. Eac
 
 ## Image Versioning and Releases
 
-The [docker-build-push](./.github/workflows/docker-build-push.yaml) action builds the XNAT application and pushes it to Github Container Registry.
+The [docker-build-push](./.github/workflows/docker-build-push.yaml) action builds the XNAT application and pushes it to GitHub Container Registry.
 
 A new release should be created in GitHub in order to resolve the correct version of XNAT in GHCR. This should be done after every PR is merged into the `main` branch!
 

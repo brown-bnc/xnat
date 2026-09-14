@@ -2,7 +2,7 @@
 # BUILD
 #   Build the XNAT web artifact from source
 #-----------------------------------------------------------------------------
-FROM eclipse-temurin:21-jdk as build
+FROM eclipse-temurin:21-jdk AS build
 
 # CAUTION: XNAT VERSION for this stage, make sure to also update next stage!!
 ENV XNAT_VERSION=1.10.0

@@ -6,7 +6,7 @@
 
 - **[docker-compose.yaml](./docker-compose.yaml):** The services that are part of the XNAT application
   - *A more detailed explanation of the file is provided [below](#docker-compose-overview)*
-- **[.env.example](./env/.env.example):** The key/value pairs used to configure XNAT's runtime environment
+- **[.env](./env):** The key/value pairs used to configure XNAT's runtime environment
   - *See [below](#environment-variables) for setting up the environment correctly.*
 - **[ldap-provider.properties.example](./config/ldap-provider.properties.example):** The key/value pairs used to configure an LDAP authentication provider in XNAT
   - *See [below](#ldap-provider) for setting up the provider correctly.*
@@ -58,33 +58,14 @@ This deployment requires [Docker](https://www.docker.com/) with Docker Compose t
 
 ### Environment Variables
 
->[!WARNING]
-> Environment files contain sensitive credentials that should not be added to git source control
+>[!CAUTION]
+> The provided values are only safe for local connections. Local deployments should never contain production data and this .env file should never include production values.
 
-1. The [.env.example](./env/.env.example) file should be copied and renamed `.env`.
-2. Values for each key should be provided.
-
-The example values listed below are safe for local testing:
-
-```properties
-# Tomcat Options
-CATALINA_OPTS=
-
-# Database Options
-POSTGRES_HOST=localhost
-POSTGRES_PORT=5432
-POSTGRES_DB=xnat_test
-POSTGRES_USER=xnat
-POSTGRES_PASSWORD=password
-
-# XNAT Options
-XNAT_SITE_URL=https://localhost:8080
-XNAT_ADMIN_EMAIL=admin@example.com
-```
+The provided `.env` file contains the necessary secrets to set up the XNAT and database applications for the deployment. It should not need to be changed.
 
 ### Authentication Providers
 
->[!WARNING]
+>[!Caution]
 > These files contain sensitive credentials that should not be added to git source control
 
 #### LDAP Provider

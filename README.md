@@ -45,19 +45,13 @@ The name of the release will be used as the tag for the image and should align w
 ## Local Deployments
 
 >[!NOTE]
-> The XNAT deployments running on Brown University's infrastructure (test, QA, and production) are managed via Kubernetes in the [k8s-deploy-bke](https://github.com/brown-ccv/k8s-deploy-bke) repository. The methods listed below are intended solely for local, test deployments.
+> The XNAT deployments running on Brown University's infrastructure (staging, QA, and production) are managed via Kubernetes in the [k8s-deploy-bke](https://github.com/brown-ccv/k8s-deploy-bke) repository. The methods listed below are intended solely for local, test deployments.
 
 The Docker and K8s folders provide some configuration files that automatically initialize the XNAT application.
 
 - The [docker](./docker/) folder contains files and instructions for building and deploying the XNAT application locally using Docker Compose. Additional details can be found in [DOCKER.md](./docker/DOCKER.md).
 - The [k8s](./k8s/) folder contains files and instructions for building and deploying the XNAT application locally using Kubernetes. Additional details can be found in [K8S.md](./k8s/K8S.md).
 
-### Environment Variables
-
-- The XNAT application must be connected to a postgres database to work. The connection is defined using custom environment variables
-- Providing values for the `XNAT_SITE_URL` and `XNAT_ADMIN_EMAIL` environment variables will skip the initialization page on first launch. The default username/password is `admin`/`admin`.
-- Additional tomcat options are provided through environment variables
-
 ### Authentication Providers
 
-Instructions for setting up LDAP and OIDC configuration files are provided for both the [docker](./docker/DOCKER.md#authentication-providers) and [k8s](./k8s/K8S.md#authentication-providers) deployments.
+Instructions for setting up LDAP and OIDC authentication providers are provided for both the [docker](./docker/DOCKER.md#authentication-providers) and [k8s](./k8s/K8S.md#authentication-providers) deployments.

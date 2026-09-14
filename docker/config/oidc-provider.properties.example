@@ -1,0 +1,37 @@
+# Name displayed in the UI
+name=
+provider.id=X
+auth.method=openid
+
+# Site Settings
+siteUrl=
+preEstablishedRedirUri=
+openid.X.link=<a href="/openid-login?providerId=X">Sign in using OIDC</a>
+
+# Credentials and endpoints
+openid.X.clientId=
+openid.X.clientSecret=
+openid.X.accessTokenUri=
+openid.X.userAuthUri=
+openid.X.userInfoUri=
+
+# Claims Mapping
+openid.X.scopes=openid,profile,email
+openid.X.emailProperty=email
+openid.X.givenNameProperty=given_name
+openid.X.familyNameProperty=family_name
+
+# Account Provisioning
+# Set to true to automatically enable new users (allow immediate login), false to require admin approval
+auto.enabled=
+# Set to true to automatically verify new users, false to require email/admin verification
+auto.verified=
+# Do NOT force the user creation process. User must match their legacy LDAP account to OIDC
+openid.X.forceUserCreate=false
+# Flag that sets if we should be checking email domains
+openid.X.shouldFilterEmailDomains=
+openid.X.allowedEmailDomains=
+# Flag to enable the PKCE support
+openid.X.pkceEnabled=
+# Default username pattern for the auth_user field of the xhbm_xdat_user_auth table
+openid.X.usernamePattern=[providerId]-[sub]

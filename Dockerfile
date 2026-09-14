@@ -74,9 +74,11 @@ RUN cd /data/xnat/home/plugins \
     && curl -fLO "https://bitbucket.org/xnatdev/dicom-query-retrieve/downloads/dicom-query-retrieve-3.0.0-xpl.jar" \
     && curl -fLO "https://bitbucket.org/xnatx/pipeline_engine_plugin/downloads/pipeline_engine_ui-1.2.0-xpl.jar" \
     && curl -fLO "https://bitbucket.org/xnatdev/container-service/downloads/container-service-3.8.1-fat.jar" \
-    && curl -fLO "https://github.com/NrgXnat/batch-transfer-plugin/releases/download/v1.1.1/batch-transfer-1.1.1.jar"
+    && curl -fLO "https://github.com/NrgXnat/batch-transfer-plugin/releases/download/v1.1.1/batch-transfer-1.1.1.jar" \
+    && curl -fLO "https://bitbucket.org/xnatx/xnatx-batch-launch-plugin/downloads/batch-launch-0.9.0-xpl.jar"
 
-# Ports have the following use:
+
+# NOTE (BNR): Ports have the following use:
 #  8000 - Catalina debug port, only used if debug is set to true
 #  8080 - Web port, this is how users connect to XNAT
 #  8104 - Scanner port, this is how the scanner connects to XNAT

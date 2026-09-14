@@ -8,7 +8,7 @@
 - **[namespace.yaml](./namespace.yaml):** The namespace isolating the deployment from other locally running projects
 - **[app.yaml](./app.yaml):** The manifests for the XNAT application
 - **[db.yaml](./db.yaml):** The manifests for the PostgreSQL database
-- **[.env](./env):** The key/value pairs used to configure XNAT's runtime environment
+- **[.env](.env):** The key/value pairs used to configure XNAT's runtime environment
   - *See [below](#environment-variables) for setting up the environment correctly.*
 - **[ldap-provider.properties.example](./config/ldap-provider.properties.example):** The key/value pairs used to configure an LDAP authentication provider in XNAT
   - *See [below](#ldap-provider) for setting up the provider correctly.*
@@ -118,7 +118,8 @@ The provided `.env` file contains the necessary secrets to set up the XNAT and d
    3. The `- config/ldap-provider.properties` file
 4. Uncomment the following lines in the [app.yaml](./app.yaml) file
    1. The `volumeMounts:` key
-   2. The `- name: auth-config` volume whose subPath is `ldap-provider.properties`
+   2. The `- name: auth-config` volume whose subPath is `ldap-provider.properties` and the rest of its block
+   3. The `volumes:` key and the rest of its block
 
 #### OIDC Provider
 
@@ -130,7 +131,8 @@ The provided `.env` file contains the necessary secrets to set up the XNAT and d
    3. The `- config/oidc-provider.properties` file
 4. Uncomment the following lines in the [app.yaml](./app.yaml) file
    1. The `volumeMounts:` key
-   2. The `- name: auth-config` volume whose subPath is `oidc-provider.properties`
+   2. The `- name: auth-config` volume whose subPath is `oidc-provider.properties` and the rest of its block
+   3. The `volumes:` key and the rest of its block
 
 ## Running the Deployment
 
@@ -139,6 +141,9 @@ The provided `.env` file contains the necessary secrets to set up the XNAT and d
 1. The Docker images must be built with a name (`xnat:local`) for Kubernetes to run:
 
    ```shell
+   # From this directory
+   docker build -t xnat:local ..
+   # From the root directory
    docker build -t xnat:local .
    ```
 

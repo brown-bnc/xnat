@@ -25,8 +25,7 @@ spec:
               containerPort: 8104
             - name: debug
               containerPort: 8000
-          # Uncomment "volumeMounts" and its entries after creating config/ldap-provider.properties and config/oidc-provider.properties
-          # (and uncommenting the auth-config secretGenerator in kustomization.yaml, and the "volumes" block below)
+          # NOTE: Uncomment the following lines to enable the LDAP and/or OIDC plugins
           # volumeMounts:
           # - name: auth-config
           #   mountPath: /data/xnat/home/config/auth/ldap-provider.properties
@@ -51,7 +50,7 @@ spec:
             httpGet:
               path: /
               port: http
-      # Uncomment after uncommenting the "volumeMounts" block above and the auth-config secretGenerator in kustomization.yaml
+      # NOTE: Uncomment the following lines to enable the LDAP and/or OIDC plugins
       # volumes:
       # - name: auth-config
       #   secret:

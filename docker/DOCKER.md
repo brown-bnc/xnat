@@ -6,7 +6,7 @@
 
 - **[docker-compose.yaml](./docker-compose.yaml):** The services that are part of the XNAT application
   - *A more detailed explanation of the file is provided [below](#docker-compose-overview)*
-- **[.env](./env):** The key/value pairs used to configure XNAT's runtime environment
+- **[.env](.env):** The key/value pairs used to configure XNAT's runtime environment
   - *See [below](#environment-variables) for setting up the environment correctly.*
 - **[ldap-provider.properties.example](./config/ldap-provider.properties.example):** The key/value pairs used to configure an LDAP authentication provider in XNAT
   - *See [below](#ldap-provider) for setting up the provider correctly.*
@@ -74,7 +74,7 @@ The provided `.env` file contains the necessary secrets to set up the XNAT and d
 2. Values for each key should be provided according to the [plugin's documentation](https://wiki.xnat.org/xnat-tools/xnat-ldap-authentication-plugin).
 3. Uncomment the following lines in the [docker-compose.yaml](./docker-compose.yaml).
    1. The `volumes:` key
-   2. The `- ./config/ldap-prover.properties:...` volume
+   2. The `- ./config/ldap-provider.properties:...` volume
 
 #### OIDC Provider
 
@@ -82,7 +82,7 @@ The provided `.env` file contains the necessary secrets to set up the XNAT and d
 2. Values for each key should be provided according to the [plugin's documentation](https://wiki.xnat.org/xnat-tools/openid-authentication-plugin).
 3. Uncomment the following lines in the [docker-compose.yaml](./docker-compose.yaml).
    1. The `volumes:` key
-   2. The `- ./config/oidc-prover.properties:...` volume
+   2. The `- ./config/oidc-provider.properties:...` volume
 
 ## Running the Deployment
 

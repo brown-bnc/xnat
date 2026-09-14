@@ -21,7 +21,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
-# TODO #33: These need to be updated
 jobs:
   build_and_push:
     name: 🐳 Build and Push Container

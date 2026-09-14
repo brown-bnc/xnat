@@ -14,7 +14,7 @@ This repository contains the files necessary to build Brown University's instanc
 >[!WARNING]
 > Plugin versions must be compatible with the XNAT version being built. Update versions in the [Dockerfile](./Dockerfile) when upgrading XNAT.
 
-XNAT plugins are installed directly into the Docker image during build time.The [Dockerfile](./Dockerfile) installs the plugins towards the end of the file.
+XNAT plugins are installed directly into the Docker image during build time. The [Dockerfile](./Dockerfile) installs the plugins towards the end of the file.
 
 ### Authentication Plugins
 

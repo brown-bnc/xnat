@@ -10,7 +10,7 @@ services:
       - "8000:8000"
       - "8080:8080"
       - "8104:8104"
-    env_file: ./env/.env
+    env_file: .env
     volumes:
       # Enable the LDAP plugin
       - ./config/ldap-provider.properties:/data/xnat/home/config/auth/ldap-provider.properties
@@ -25,6 +25,6 @@ services:
     image: postgres:16
     ports:
       - "5432:5432"
-    env_file: ./env/.env
+    env_file: .env
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]

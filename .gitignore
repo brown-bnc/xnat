@@ -1,10 +1,6 @@
 # IDE
 .vscode
 
-# Env
-.env
-ldap.env
-
 # Properties
 xnat-conf.properties
 *.properties

@@ -11,11 +11,10 @@ services:
       - "8080:8080"
       - "8104:8104"
     env_file: .env
-    volumes:
-      # Enable the LDAP plugin
-      - ./config/ldap-provider.properties:/data/xnat/home/config/auth/ldap-provider.properties
-      # Enable the OIDC plugin
-      - ./config/oidc-provider.properties:/data/xnat/home/config/auth/oidc-provider.properties
+    # NOTE: Uncomment the following lines to enable the LDAP and/or OIDC plugins
+    # volumes:
+    # - ./config/ldap-provider.properties:/data/xnat/home/config/auth/ldap-provider.properties
+    # - ./config/oidc-provider.properties:/data/xnat/home/config/auth/oidc-provider.properties
     depends_on:
       postgres:
         condition: service_healthy

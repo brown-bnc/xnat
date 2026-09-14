@@ -25,15 +25,17 @@ spec:
               containerPort: 8104
             - name: debug
               containerPort: 8000
-          volumeMounts:
-            - name: auth-config
-              mountPath: /data/xnat/home/config/auth/ldap-provider.properties
-              subPath: ldap-provider.properties
-              readOnly: true
-            - name: auth-config
-              mountPath: /data/xnat/home/config/auth/oidc-provider.properties
-              subPath: oidc-provider.properties
-              readOnly: true
+          # Uncomment "volumeMounts" and its entries after creating config/ldap-provider.properties and config/oidc-provider.properties
+          # (and uncommenting the auth-config secretGenerator in kustomization.yaml, and the "volumes" block below)
+          # volumeMounts:
+          # - name: auth-config
+          #   mountPath: /data/xnat/home/config/auth/ldap-provider.properties
+          #   subPath: ldap-provider.properties
+          #   readOnly: true
+          # - name: auth-config
+          #   mountPath: /data/xnat/home/config/auth/oidc-provider.properties
+          #   subPath: oidc-provider.properties
+          #   readOnly: true
           startupProbe:
             httpGet:
               path: /
@@ -49,10 +51,11 @@ spec:
             httpGet:
               path: /
               port: http
-      volumes:
-        - name: auth-config
-          secret:
-            secretName: auth-config
+      # Uncomment after uncommenting the "volumeMounts" block above and the auth-config secretGenerator in kustomization.yaml
+      # volumes:
+      # - name: auth-config
+      #   secret:
+      #     secretName: auth-config
 ---
 apiVersion: v1
 kind: Service

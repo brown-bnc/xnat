@@ -9,7 +9,8 @@ secretGenerator:
   - name: environment
     envs:
       - .env
-  - name: auth-config
-    files:
-      - config/ldap-provider.properties
-      - config/oidc-provider.properties
+  # NOTE: Uncomment the following lines to enable the LDAP and/or OIDC plugins
+  # - name: auth-config
+  #   files:
+  #     - config/ldap-provider.properties
+  #     - config/oidc-provider.properties

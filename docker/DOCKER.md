@@ -72,11 +72,17 @@ The provided `.env` file contains the necessary secrets to set up the XNAT and d
 
 1. The [ldap-provider.properties.example](./config/ldap-provider.properties.example) file should be copied and renamed `ldap-provider.properties`.
 2. Values for each key should be provided according to the [plugin's documentation](https://wiki.xnat.org/xnat-tools/xnat-ldap-authentication-plugin).
+3. Uncomment the following lines in the [docker-compose.yaml](./docker-compose.yaml).
+   1. The `volumes:` key
+   2. The `- ./config/ldap-prover.properties:...` volume
 
 #### OIDC Provider
 
 1. The [oidc-provider.properties.example](./config/oidc-provider.properties.example) file should be copied and renamed `oidc-provider.properties`.
 2. Values for each key should be provided according to the [plugin's documentation](https://wiki.xnat.org/xnat-tools/openid-authentication-plugin).
+3. Uncomment the following lines in the [docker-compose.yaml](./docker-compose.yaml).
+   1. The `volumes:` key
+   2. The `- ./config/oidc-prover.properties:...` volume
 
 ## Running the Deployment
 

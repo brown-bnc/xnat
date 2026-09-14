@@ -112,11 +112,25 @@ The provided `.env` file contains the necessary secrets to set up the XNAT and d
 
 1. The [ldap-provider.properties.example](./config/ldap-provider.properties.example) file should be copied and renamed `ldap-provider.properties`.
 2. Values for each key should be provided according to the [plugin's documentation](https://wiki.xnat.org/xnat-tools/xnat-ldap-authentication-plugin).
+3. Uncomment the following lines in the [kustomization.yaml](./kustomization.yaml) file
+   1. The `- name: auth-config` key
+   2. The `files:` nested key
+   3. The `- config/ldap-provider.properties` file
+4. Uncomment the following lines in the [app.yaml](./app.yaml) file
+   1. The `volumeMounts:` key
+   2. The `- name: auth-config` volume whose subPath is `ldap-provider.properties`
 
 #### OIDC Provider
 
 1. The [oidc-provider.properties.example](./config/oidc-provider.properties.example) file should be copied and renamed `oidc-provider.properties`.
 2. Values for each key should be provided according to the [plugin's documentation](https://wiki.xnat.org/xnat-tools/openid-authentication-plugin).
+3. Uncomment the following lines in the [kustomization.yaml](./kustomization.yaml) file
+   1. The `- name: auth-config` key
+   2. The `files:` nested key
+   3. The `- config/oidc-provider.properties` file
+4. Uncomment the following lines in the [app.yaml](./app.yaml) file
+   1. The `volumeMounts:` key
+   2. The `- name: auth-config` volume whose subPath is `oidc-provider.properties`
 
 ## Running the Deployment
 

@@ -1,15 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: xnat
+  name: deployment-xnat
+  labels:
+    app: xnat
+    component: xnat
 spec:
   selector:
     matchLabels:
       app: xnat
+      component: xnat
   template:
     metadata:
       labels:
         app: xnat
+        component: xnat
     spec:
       containers:
         - name: xnat
@@ -59,13 +64,15 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: xnat
+  name: service-xnat
   labels:
     app: xnat
+    component: xnat
 spec:
   type: ClusterIP
   selector:
     app: xnat
+    component: xnat
   ports:
     - name: http
       port: 80

@@ -1,17 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: postgres
+  name: deployment-postgres
+  labels:
+    app: xnat
+    component: database
 spec:
   strategy:
     type: Recreate
   selector:
     matchLabels:
-      app: postgres
+      app: xnat
+      component: database
   template:
     metadata:
       labels:
-        app: postgres
+        app: xnat
+        component: database
     spec:
       containers:
         - name: postgres
@@ -38,13 +43,15 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres
+  name: service-postgres
   labels:
-    app: postgres
+    app: xnat
+    component: database
 spec:
   type: ClusterIP
   selector:
-    app: postgres
+    app: xnat
+    component: database
   ports:
     - name: db
       port: 5432
@@ -54,7 +61,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: db-data
+  name: pvc-postgres
 spec:
   accessModes:
     - ReadWriteOnce

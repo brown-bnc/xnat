@@ -1,5 +1,5 @@
 name=
-provider.id=ldap
+provider.id=
 auth.method=ldap
 address=
 userdn=

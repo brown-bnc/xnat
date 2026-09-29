@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: xnat
+resources:
+  - app.yaml
+  - db.yaml
+  - namespace.yaml
+secretGenerator:
+  - name: environment
+    envs:
+      - .env
+  # NOTE: Uncomment the following lines to enable the LDAP and/or OIDC plugins
+  # - name: auth-config
+  #   files:
+  #     - config/ldap-provider.properties
+  #     - config/oidc-provider.properties

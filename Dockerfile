@@ -1,3 +1,4 @@
+# The version of XNAT to install
 ARG XNAT_VERSION=1.10.0
 
 ###################################################################################################
@@ -68,7 +69,8 @@ RUN mkdir -p "${CATALINA_HOME}/webapps/ROOT" \
 RUN cd /data/xnat/home/plugins \
     # Authentication Plugins
     && curl -fLO "https://bitbucket.org/xnatx/ldap-auth-plugin/downloads/ldap-auth-plugin-1.3.0.jar" \
-    && curl -fLO "https://bitbucket.org/xnatx/openid-auth-plugin/downloads/openid-auth-plugin-1.5.0-xpl.jar" \
+    # TODO #30: Implement OIDC plugin
+    # && curl -fLO "https://bitbucket.org/xnatx/openid-auth-plugin/downloads/openid-auth-plugin-1.5.0-xpl.jar" \
     # Imaging & Workflow Plugins
     && curl -fLO "https://xnat.org/files/ohif-viewer-xnat-plugin/ohif-viewer-3.8.0-fat.jar" \
     && curl -fLO "https://bitbucket.org/xnatdev/dicom-query-retrieve/downloads/dicom-query-retrieve-3.0.0-xpl.jar" \

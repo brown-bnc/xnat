@@ -85,18 +85,32 @@ RUN mkdir -p "${CATALINA_HOME}/webapps/ROOT" \
 
 # Install plugins
 # !CAUTION: Ensure these versions are compatible with the current version of XNAT
-RUN cd /data/xnat/home/plugins \
+# Every jar is verified against a pinned sha256. When bumping a plugin, update its checksum
+# (GitHub shows it as the asset "digest"; for xnat.org downloads, hash the file yourself).
+RUN set -eu; \
+    cd /data/xnat/home/plugins; \
+    fetch() { \
+        curl -fsSLO --retry 3 "$1"; \
+        echo "$2  $(basename "$1")" | sha256sum -c -; \
+    }; \
     # Authentication Plugins
-    && curl -fLO "https://bitbucket.org/xnatx/ldap-auth-plugin/downloads/ldap-auth-plugin-1.3.0.jar" \
+    fetch "https://github.com/NrgXnat/ldap-auth-plugin/releases/download/1.3.0/ldap-auth-plugin-1.3.0.jar" \
+          94ad3396f71ac9c84c648658718f4a9c5fd5caba92e62ae54bac2c5993631eac; \
     # TODO #30: Implement OIDC plugin
-    # && curl -fLO "https://bitbucket.org/xnatx/openid-auth-plugin/downloads/openid-auth-plugin-1.5.0-xpl.jar" \
+    # fetch "https://github.com/NrgXnat/openid-auth-plugin/releases/download/<version>/openid-auth-plugin-<version>-xpl.jar" <sha256>; \
     # Imaging & Workflow Plugins
-    && curl -fLO "https://xnat.org/files/ohif-viewer-xnat-plugin/ohif-viewer-3.8.0-fat.jar" \
-    && curl -fLO "https://bitbucket.org/xnatdev/dicom-query-retrieve/downloads/dicom-query-retrieve-3.0.0-xpl.jar" \
-    && curl -fLO "https://bitbucket.org/xnatx/pipeline_engine_plugin/downloads/pipeline_engine_ui-1.2.0-xpl.jar" \
-    && curl -fLO "https://github.com/NrgXnat/container-service/releases/download/3.9.0/container-service-3.9.0-fat.jar" \
-    && curl -fLO "https://github.com/NrgXnat/batch-transfer-plugin/releases/download/v1.1.1/batch-transfer-1.1.1.jar" \
-    && curl -fLO "https://bitbucket.org/xnatx/xnatx-batch-launch-plugin/downloads/batch-launch-0.9.0-xpl.jar"
+    fetch "https://xnat.org/files/ohif-viewer-xnat-plugin/ohif-viewer-3.8.0-fat.jar" \
+          c8fa0b6f2f479dc1311dd7a3de6c5728b6bfb79dcc46a2f7e7e3929103f19f08; \
+    fetch "https://github.com/NrgXnat/dicom-query-retrieve/releases/download/3.1.0/dicom-query-retrieve-3.1.0-xpl.jar" \
+          1d657eaeb31200dfa4445cb90be15cc7609e41b395cf2a5040c6a4d3c912dcb1; \
+    fetch "https://github.com/NrgXnat/pipeline-engine-plugin/releases/download/1.2.0/pipeline_engine_ui-1.2.0-xpl.jar" \
+          21aedd6a94521dc2ce67d7ddd4154d4866ed142a80f45a78a2ae802f9fca34cb; \
+    fetch "https://github.com/NrgXnat/container-service/releases/download/3.9.0/container-service-3.9.0-fat.jar" \
+          809042a18dfea8383b7bd5f53b367eb8ea05c2a8c3f35b519841aa17b93cd207; \
+    fetch "https://github.com/NrgXnat/batch-transfer-plugin/releases/download/v1.1.1/batch-transfer-1.1.1.jar" \
+          8b583b1e0a71cbcfafec3cef14918f861184beae6001caf22db9dc3478f2c097; \
+    fetch "https://github.com/NrgXnat/batch-launch-plugin/releases/download/0.9.0/batch-launch-0.9.0-xpl.jar" \
+          3783f9f5e19db5d7a7c45c5e0314fe79ecf45ef4742baac27eec4dfa43533c6e
 
 
 # NOTE (BNR): Ports have the following use:

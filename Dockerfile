@@ -34,6 +34,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     fonts-dejavu-core \
     curl \
     unzip \
+    xmlstarlet \
     && rm -rf /var/lib/apt/lists/*
 
 # Install the OpenCV native library required by XNAT >= 1.10.2 (dcm4che JPEG-family codecs).
@@ -76,16 +77,23 @@ COPY --from=build "/root/xnat/xnat-web/build/libs/xnat-web-${XNAT_VERSION}.war" 
     "${CATALINA_HOME}/webapps/ROOT.war"
 # Copy local files
 COPY docker-entrypoint.sh "/usr/local/bin/docker-entrypoint.sh"
-# Stock server.xml plus a RemoteIpValve so Tomcat honors X-Forwarded-Proto from the ingress.
-# The file records the Tomcat version it was taken from; fail if the base image has another one.
-COPY tomcat/server.xml "${CATALINA_HOME}/conf/server.xml"
-RUN version="$(sed -n 's/.*TOMCAT_VERSION=\([0-9.]*\).*/\1/p' "${CATALINA_HOME}/conf/server.xml")"; \
-    if [ "${version}" != "${TOMCAT_VERSION}" ]; then \
-        echo "tomcat/server.xml is from Tomcat ${version:-<unknown>}, but the base image has ${TOMCAT_VERSION}." >&2; \
-        echo "Refresh it from https://raw.githubusercontent.com/apache/tomcat/${TOMCAT_VERSION}/conf/server.xml" >&2; \
-        echo "(see scripts/check-server-xml.sh) and update its TOMCAT_VERSION line." >&2; \
-        exit 1; \
-    fi
+
+# Add a RemoteIpValve to the stock server.xml, just before the AccessLogValve (so the access log
+# sees the client IP), so Tomcat honors X-Forwarded-Proto from the ingress (https->https). The final check fails
+# the build if the valve did not land there, e.g. because a Tomcat upgrade changed server.xml.
+RUN set -eu; \
+    conf="${CATALINA_HOME}/conf/server.xml"; \
+    host=/Server/Service/Engine/Host; \
+    access="${host}/Valve[@className='org.apache.catalina.valves.AccessLogValve']"; \
+    valve="org.apache.catalina.valves.RemoteIpValve"; \
+    xmlstarlet ed -L \
+      -i "${access}" -t elem -n Valve \
+      -i "${access}/preceding-sibling::Valve[1]" -t attr -n className -v "${valve}" \
+      -i "${access}/preceding-sibling::Valve[1]" -t attr -n remoteIpHeader -v X-Forwarded-For \
+      -i "${access}/preceding-sibling::Valve[1]" -t attr -n protocolHeader -v X-Forwarded-Proto \
+      -i "${access}/preceding-sibling::Valve[1]" -t attr -n internalProxies -v ".*" \
+      "${conf}"; \
+    [ "$(xmlstarlet sel -t -v "count(${access}/preceding-sibling::Valve[1][@className='${valve}'])" "${conf}")" = 1 ]
 
 # Unpack WAR file for tomcat
 RUN mkdir -p "${CATALINA_HOME}/webapps/ROOT" \

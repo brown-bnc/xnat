@@ -1,0 +1,8 @@
+        <!-- Trust X-Forwarded-Proto/-For from the TLS-terminating ingress so XNAT builds
+             https:// redirect URLs (Chrome blocks https->http redirects under CSP form-action 'self').
+             Only the in-cluster ingress can reach port 8080, so all proxies are trusted. -->
+        <Valve className="org.apache.catalina.valves.RemoteIpValve"
+               remoteIpHeader="X-Forwarded-For"
+               protocolHeader="X-Forwarded-Proto"
+               internalProxies=".*" />
+

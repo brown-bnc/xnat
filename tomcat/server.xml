@@ -170,7 +170,8 @@
         -->
 
         <!-- BNC BEGIN: local addition to the stock server.xml. scripts/check-server-xml.sh
-             removes these marked blocks and checks the rest against the latest Tomcat 9 file.
+             removes these marked blocks and checks the rest against the Tomcat 9
+             version in the official image.
              Trust X-Forwarded-Proto/-For from the TLS-terminating ingress so XNAT builds
              https:// redirect URLs (Chrome blocks https->http redirects under CSP form-action 'self').
              Only the in-cluster ingress can reach port 8080, so all proxies are trusted. -->

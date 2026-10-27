@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 # Verify that tomcat/server.xml, with our BNC BEGIN/END blocks removed, is identical to the
-# stock server.xml of the latest Tomcat 9 release (the base image tracks tomcat:9-*).
-# Fails with a diff if it changed, so our copy can be refreshed.
+# stock server.xml of the Tomcat 9 version the official tomcat:9-* images ship
+# (docker-library/tomcat versions.json). Fails with a diff if it changed, so our copy can be refreshed.
 #
-# Usage: scripts/check-server-xml.sh   (needs curl)
+# Usage: scripts/check-server-xml.sh   (needs curl and jq)
 set -euo pipefail
 
 ours="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/tomcat/server.xml"
 
-version="$(curl -fsS https://dlcdn.apache.org/tomcat/tomcat-9/ | grep -o 'v9\.0\.[0-9]*/' | tr -d v/ | sort -V | tail -n 1)"
+# "9.0" matches the tomcat:9-* base image in the Dockerfile; change both together
+version="$(curl -fsS https://raw.githubusercontent.com/docker-library/tomcat/master/versions.json | jq -r '."9.0".version')"
+[[ "${version}" =~ ^9\.0\.[0-9]+$ ]] || { echo "Unexpected Tomcat version '${version}'" >&2; exit 1; }
 stock_url="https://raw.githubusercontent.com/apache/tomcat/${version}/conf/server.xml"
 stock="$(curl -fsS "${stock_url}")"
 

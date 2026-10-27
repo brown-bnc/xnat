@@ -22,8 +22,19 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  check_server_xml:
+    name: 🔍 Check server.xml against Tomcat 9
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v7
+
+      - name: 🔍 Compare tomcat/server.xml with the stock file
+        run: scripts/check-server-xml.sh
+
   build_and_push:
     name: 🐳 Build and Push Container
+    needs: check_server_xml
     runs-on: ubuntu-latest
     steps:
       - name: ⬇️ Checkout repo

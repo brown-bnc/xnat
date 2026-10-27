@@ -76,23 +76,8 @@ COPY --from=build "/root/xnat/xnat-web/build/libs/xnat-web-${XNAT_VERSION}.war" 
     "${CATALINA_HOME}/webapps/ROOT.war"
 # Copy local files
 COPY docker-entrypoint.sh "/usr/local/bin/docker-entrypoint.sh"
-
-# Add RemoteIpValve to the stock server.xml so Tomcat honors X-Forwarded-Proto from the ingress.
-# It goes right before the AccessLogValve; the build fails if that anchor is not found exactly once,
-# so a Tomcat base image upgrade cannot silently drop the valve.
-COPY tomcat/remote-ip-valve.xml /tmp/remote-ip-valve.xml
-RUN set -eu; \
-    conf="${CATALINA_HOME}/conf/server.xml"; \
-    anchor='<Valve className="org.apache.catalina.valves.AccessLogValve"'; \
-    count="$(grep -cF "${anchor}" "${conf}" || true)"; \
-    if [ "${count}" != "1" ]; then \
-        echo "Expected exactly one AccessLogValve in ${conf}, found ${count}" >&2; exit 1; \
-    fi; \
-    awk -v anchor="${anchor}" 'index($0, anchor) { while ((getline line < "/tmp/remote-ip-valve.xml") > 0) print line } { print }' \
-        "${conf}" > /tmp/server.xml; \
-    mv /tmp/server.xml "${conf}"; \
-    rm /tmp/remote-ip-valve.xml; \
-    grep -qF 'org.apache.catalina.valves.RemoteIpValve' "${conf}"
+# Stock server.xml plus a RemoteIpValve so Tomcat honors X-Forwarded-Proto from the ingress
+COPY tomcat/server.xml "${CATALINA_HOME}/conf/server.xml"
 
 # Unpack WAR file for tomcat
 RUN mkdir -p "${CATALINA_HOME}/webapps/ROOT" \

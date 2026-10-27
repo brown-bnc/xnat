@@ -76,8 +76,16 @@ COPY --from=build "/root/xnat/xnat-web/build/libs/xnat-web-${XNAT_VERSION}.war" 
     "${CATALINA_HOME}/webapps/ROOT.war"
 # Copy local files
 COPY docker-entrypoint.sh "/usr/local/bin/docker-entrypoint.sh"
-# Stock server.xml plus a RemoteIpValve so Tomcat honors X-Forwarded-Proto from the ingress
+# Stock server.xml plus a RemoteIpValve so Tomcat honors X-Forwarded-Proto from the ingress.
+# The file records the Tomcat version it was taken from; fail if the base image has another one.
 COPY tomcat/server.xml "${CATALINA_HOME}/conf/server.xml"
+RUN version="$(sed -n 's/.*TOMCAT_VERSION=\([0-9.]*\).*/\1/p' "${CATALINA_HOME}/conf/server.xml")"; \
+    if [ "${version}" != "${TOMCAT_VERSION}" ]; then \
+        echo "tomcat/server.xml is from Tomcat ${version:-<unknown>}, but the base image has ${TOMCAT_VERSION}." >&2; \
+        echo "Refresh it from https://raw.githubusercontent.com/apache/tomcat/${TOMCAT_VERSION}/conf/server.xml" >&2; \
+        echo "(see scripts/check-server-xml.sh) and update its TOMCAT_VERSION line." >&2; \
+        exit 1; \
+    fi
 
 # Unpack WAR file for tomcat
 RUN mkdir -p "${CATALINA_HOME}/webapps/ROOT" \

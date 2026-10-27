@@ -25,7 +25,8 @@ if ! diff -u --label "stock server.xml (Tomcat ${version})" --label "tomcat/serv
            { blank = 0; print }' "${ours}"); then
   echo >&2
   echo "tomcat/server.xml is out of date with Tomcat ${version}." >&2
-  echo "Copy ${stock_url} to tomcat/server.xml and re-apply the BNC BEGIN/END blocks." >&2
+  echo "Copy ${stock_url} to tomcat/server.xml, re-apply the BNC BEGIN/END blocks," >&2
+  echo "and set TOMCAT_VERSION=${version} in them." >&2
   exit 1
 fi
 

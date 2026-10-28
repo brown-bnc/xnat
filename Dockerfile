@@ -1,5 +1,5 @@
 # The version of XNAT to install
-ARG XNAT_VERSION=1.10.0
+ARG XNAT_VERSION=1.10.2.1
 
 ###################################################################################################
 ### BUILD
@@ -13,11 +13,12 @@ ENV JAVA_OPTS="-Xmx2560m -XX:+HeapDumpOnOutOfMemoryError"
 # Clone the XNAT repository
 RUN apt-get update && apt-get install -y git
 WORKDIR /root
-RUN git clone --branch "${XNAT_VERSION}" https://bitbucket.org/xnatdev/xnat-web
+# NOTE: As of 1.10.x XNAT is a monorepo on GitHub; bitbucket.org/xnatdev/xnat-web has no tags past 1.10.0
+RUN git clone --depth 1 --branch "${XNAT_VERSION}" https://github.com/NrgXnat/xnat
 
 # Build XNAT
-WORKDIR /root/xnat-web
-RUN ./gradlew --no-daemon clean war
+WORKDIR /root/xnat
+RUN ./gradlew --no-daemon :xnat-web:clean :xnat-web:war
 
 ###################################################################################################
 ### APPLICATION
@@ -33,7 +34,26 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     fonts-dejavu-core \
     curl \
     unzip \
+    xmlstarlet \
     && rm -rf /var/lib/apt/lists/*
+
+# Install the OpenCV native library required by XNAT >= 1.10.2 (dcm4che JPEG-family codecs).
+# Must be the exact 5.0.0-dcm build (OS-packaged OpenCV will not work); glibc only (no Alpine).
+# /usr/java/packages/lib is on the JVM default java.library.path, so no -Djava.library.path is needed.
+# See https://github.com/NrgXnat/xnat/blob/1.10.2/docs/installing-opencv-native.md
+ARG TARGETARCH
+ARG OPENCV_VERSION=5.0.0-dcm
+ARG OPENCV_BASE=https://nrgxnat.jfrog.io/nrgxnat/libs-release/org/weasis/thirdparty/org/opencv/libopencv_java/${OPENCV_VERSION}
+RUN set -eu; \
+    case "${TARGETARCH}" in \
+        amd64) classifier=linux-x86-64;  sha256=3552c806744192c734f6cf492bf95a139cbfd6f800ff662688d18b6a199f92f1 ;; \
+        arm64) classifier=linux-aarch64; sha256=b07190e6ef6e233c2b7dc7f945c5b470be44450a49f9915aeaaa86f8799ef6a0 ;; \
+        *) echo "No OpenCV native published for TARGETARCH=${TARGETARCH}" >&2; exit 1 ;; \
+    esac; \
+    mkdir -p /usr/java/packages/lib; \
+    curl -fsSL --retry 3 -o /usr/java/packages/lib/libopencv_java.so \
+        "${OPENCV_BASE}/libopencv_java-${OPENCV_VERSION}-${classifier}.so"; \
+    echo "${sha256}  /usr/java/packages/lib/libopencv_java.so" | sha256sum -c -
 
 # Create data directories
 RUN mkdir -p \
@@ -53,10 +73,27 @@ RUN mkdir -p \
     /data/xnat/dicom-export
 
 # Copy built files
-COPY --from=build "/root/xnat-web/build/libs/xnat-web-${XNAT_VERSION}.war" \
+COPY --from=build "/root/xnat/xnat-web/build/libs/xnat-web-${XNAT_VERSION}.war" \
     "${CATALINA_HOME}/webapps/ROOT.war"
 # Copy local files
 COPY docker-entrypoint.sh "/usr/local/bin/docker-entrypoint.sh"
+
+# Add a RemoteIpValve to the stock server.xml, just before the AccessLogValve (so the access log
+# sees the client IP), so Tomcat honors X-Forwarded-Proto from the ingress (https->https). The final check fails
+# the build if the valve did not land there, e.g. because a Tomcat upgrade changed server.xml.
+RUN set -eu; \
+    conf="${CATALINA_HOME}/conf/server.xml"; \
+    host=/Server/Service/Engine/Host; \
+    access="${host}/Valve[@className='org.apache.catalina.valves.AccessLogValve']"; \
+    valve="org.apache.catalina.valves.RemoteIpValve"; \
+    xmlstarlet ed -L \
+      -i "${access}" -t elem -n Valve \
+      -i "${access}/preceding-sibling::Valve[1]" -t attr -n className -v "${valve}" \
+      -i "${access}/preceding-sibling::Valve[1]" -t attr -n remoteIpHeader -v X-Forwarded-For \
+      -i "${access}/preceding-sibling::Valve[1]" -t attr -n protocolHeader -v X-Forwarded-Proto \
+      -i "${access}/preceding-sibling::Valve[1]" -t attr -n internalProxies -v ".*" \
+      "${conf}"; \
+    [ "$(xmlstarlet sel -t -v "count(${access}/preceding-sibling::Valve[1][@className='${valve}'])" "${conf}")" = 1 ]
 
 # Unpack WAR file for tomcat
 RUN mkdir -p "${CATALINA_HOME}/webapps/ROOT" \
@@ -66,18 +103,32 @@ RUN mkdir -p "${CATALINA_HOME}/webapps/ROOT" \
 
 # Install plugins
 # !CAUTION: Ensure these versions are compatible with the current version of XNAT
-RUN cd /data/xnat/home/plugins \
+# Every jar is verified against a pinned sha256. When bumping a plugin, update its checksum
+# (GitHub shows it as the asset "digest"; for xnat.org downloads, hash the file yourself).
+RUN set -eu; \
+    cd /data/xnat/home/plugins; \
+    fetch() { \
+        curl -fsSLO --retry 3 "$1"; \
+        echo "$2  $(basename "$1")" | sha256sum -c -; \
+    }; \
     # Authentication Plugins
-    && curl -fLO "https://bitbucket.org/xnatx/ldap-auth-plugin/downloads/ldap-auth-plugin-1.3.0.jar" \
+    fetch "https://github.com/NrgXnat/ldap-auth-plugin/releases/download/1.3.0/ldap-auth-plugin-1.3.0.jar" \
+          94ad3396f71ac9c84c648658718f4a9c5fd5caba92e62ae54bac2c5993631eac; \
     # TODO #30: Implement OIDC plugin
-    # && curl -fLO "https://bitbucket.org/xnatx/openid-auth-plugin/downloads/openid-auth-plugin-1.5.0-xpl.jar" \
+    # fetch "https://github.com/NrgXnat/openid-auth-plugin/releases/download/<version>/openid-auth-plugin-<version>-xpl.jar" <sha256>; \
     # Imaging & Workflow Plugins
-    && curl -fLO "https://xnat.org/files/ohif-viewer-xnat-plugin/ohif-viewer-3.8.0-fat.jar" \
-    && curl -fLO "https://bitbucket.org/xnatdev/dicom-query-retrieve/downloads/dicom-query-retrieve-3.0.0-xpl.jar" \
-    && curl -fLO "https://bitbucket.org/xnatx/pipeline_engine_plugin/downloads/pipeline_engine_ui-1.2.0-xpl.jar" \
-    && curl -fLO "https://bitbucket.org/xnatdev/container-service/downloads/container-service-3.8.1-fat.jar" \
-    && curl -fLO "https://github.com/NrgXnat/batch-transfer-plugin/releases/download/v1.1.1/batch-transfer-1.1.1.jar" \
-    && curl -fLO "https://bitbucket.org/xnatx/xnatx-batch-launch-plugin/downloads/batch-launch-0.9.0-xpl.jar"
+    fetch "https://xnat.org/files/ohif-viewer-xnat-plugin/ohif-viewer-3.8.0-fat.jar" \
+          c8fa0b6f2f479dc1311dd7a3de6c5728b6bfb79dcc46a2f7e7e3929103f19f08; \
+    fetch "https://github.com/NrgXnat/dicom-query-retrieve/releases/download/3.1.0/dicom-query-retrieve-3.1.0-xpl.jar" \
+          1d657eaeb31200dfa4445cb90be15cc7609e41b395cf2a5040c6a4d3c912dcb1; \
+    fetch "https://github.com/NrgXnat/pipeline-engine-plugin/releases/download/1.2.0/pipeline_engine_ui-1.2.0-xpl.jar" \
+          21aedd6a94521dc2ce67d7ddd4154d4866ed142a80f45a78a2ae802f9fca34cb; \
+    fetch "https://github.com/NrgXnat/container-service/releases/download/3.9.0/container-service-3.9.0-fat.jar" \
+          809042a18dfea8383b7bd5f53b367eb8ea05c2a8c3f35b519841aa17b93cd207; \
+    fetch "https://github.com/NrgXnat/batch-transfer-plugin/releases/download/v1.1.1/batch-transfer-1.1.1.jar" \
+          8b583b1e0a71cbcfafec3cef14918f861184beae6001caf22db9dc3478f2c097; \
+    fetch "https://github.com/NrgXnat/batch-launch-plugin/releases/download/0.9.0/batch-launch-0.9.0-xpl.jar" \
+          3783f9f5e19db5d7a7c45c5e0314fe79ecf45ef4742baac27eec4dfa43533c6e
 
 
 # NOTE (BNR): Ports have the following use:

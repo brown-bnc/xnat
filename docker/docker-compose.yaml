@@ -13,10 +13,10 @@ services:
     env_file: .env
     environment:
       # Tomcat JVM options:
-      #  -Xms256m: Initial heap size
-      #  -Xmx4g: Maximum heap size
+      #  -Xms256m   Initial heap size
+      #  -Xmx4g     Maximum heap size
       # NOTE: The CCV has found these memory sizes to be the best defaults
-      CATALINA_OPTS: -Xms256m -Xmx4g -XX:-UseBASE64Intrinsics
+      CATALINA_OPTS: -Xms256m -Xmx4g
     # NOTE: Uncomment the following lines to enable the LDAP and/or OIDC plugins
     # volumes:
     # - ./config/ldap-provider.properties:/data/xnat/home/config/auth/ldap-provider.properties

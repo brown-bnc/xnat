@@ -38,6 +38,7 @@ Kustomize composes the deployment from three manifests (`namespace.yaml`, `app.y
   - **`ports`:** The container ports exposed by XNAT
     - *Note how these match what's exposed in the project's [Dockerfile](../Dockerfile)*
   - **`envFrom`:** Loads environment variables from the generated `environment` Secret
+  - **`env`:** Non-secret environment variables set directly on the container
   - **`volumeMounts`:** Mounts the LDAP and OIDC properties files from the `auth-config` Secret
   - **`startupProbe` / `readinessProbe` / `livenessProbe`:** The command used to determine whether the container is healthy
     - *Sends an HTTP request to `/` on the container's `http` port*

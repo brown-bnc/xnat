@@ -23,6 +23,13 @@ spec:
           envFrom:
             - secretRef:
                 name: environment
+          env:
+            # Tomcat JVM options:
+            #  -Xms256m   Initial heap size
+            #  -Xmx4g     Maximum heap size
+            # NOTE: The CCV has found these memory sizes to be the best defaults
+            - name: CATALINA_OPTS
+              value: "-Xms256m -Xmx4g"
           ports:
             - name: http
               containerPort: 8080

@@ -8,6 +8,7 @@ ARG XNAT_VERSION=1.10.2.1
 FROM eclipse-temurin:21-jdk AS build
 
 ARG XNAT_VERSION
+# NOTE: Write a heap dump if the build fails. Only effects this stage
 ENV JAVA_OPTS="-Xmx2560m -XX:+HeapDumpOnOutOfMemoryError"
 
 # Clone the XNAT repository
@@ -46,13 +47,13 @@ ARG OPENCV_VERSION=5.0.0-dcm
 ARG OPENCV_BASE=https://nrgxnat.jfrog.io/nrgxnat/libs-release/org/weasis/thirdparty/org/opencv/libopencv_java/${OPENCV_VERSION}
 RUN set -eu; \
     case "${TARGETARCH}" in \
-        amd64) classifier=linux-x86-64;  sha256=3552c806744192c734f6cf492bf95a139cbfd6f800ff662688d18b6a199f92f1 ;; \
-        arm64) classifier=linux-aarch64; sha256=b07190e6ef6e233c2b7dc7f945c5b470be44450a49f9915aeaaa86f8799ef6a0 ;; \
-        *) echo "No OpenCV native published for TARGETARCH=${TARGETARCH}" >&2; exit 1 ;; \
+    amd64) classifier=linux-x86-64;  sha256=3552c806744192c734f6cf492bf95a139cbfd6f800ff662688d18b6a199f92f1 ;; \
+    arm64) classifier=linux-aarch64; sha256=b07190e6ef6e233c2b7dc7f945c5b470be44450a49f9915aeaaa86f8799ef6a0 ;; \
+    *) echo "No OpenCV native published for TARGETARCH=${TARGETARCH}" >&2; exit 1 ;; \
     esac; \
     mkdir -p /usr/java/packages/lib; \
     curl -fsSL --retry 3 -o /usr/java/packages/lib/libopencv_java.so \
-        "${OPENCV_BASE}/libopencv_java-${OPENCV_VERSION}-${classifier}.so"; \
+    "${OPENCV_BASE}/libopencv_java-${OPENCV_VERSION}-${classifier}.so"; \
     echo "${sha256}  /usr/java/packages/lib/libopencv_java.so" | sha256sum -c -
 
 # Create data directories
@@ -87,12 +88,12 @@ RUN set -eu; \
     access="${host}/Valve[@className='org.apache.catalina.valves.AccessLogValve']"; \
     valve="org.apache.catalina.valves.RemoteIpValve"; \
     xmlstarlet ed -L \
-      -i "${access}" -t elem -n Valve \
-      -i "${access}/preceding-sibling::Valve[1]" -t attr -n className -v "${valve}" \
-      -i "${access}/preceding-sibling::Valve[1]" -t attr -n remoteIpHeader -v X-Forwarded-For \
-      -i "${access}/preceding-sibling::Valve[1]" -t attr -n protocolHeader -v X-Forwarded-Proto \
-      -i "${access}/preceding-sibling::Valve[1]" -t attr -n internalProxies -v ".*" \
-      "${conf}"; \
+    -i "${access}" -t elem -n Valve \
+    -i "${access}/preceding-sibling::Valve[1]" -t attr -n className -v "${valve}" \
+    -i "${access}/preceding-sibling::Valve[1]" -t attr -n remoteIpHeader -v X-Forwarded-For \
+    -i "${access}/preceding-sibling::Valve[1]" -t attr -n protocolHeader -v X-Forwarded-Proto \
+    -i "${access}/preceding-sibling::Valve[1]" -t attr -n internalProxies -v ".*" \
+    "${conf}"; \
     [ "$(xmlstarlet sel -t -v "count(${access}/preceding-sibling::Valve[1][@className='${valve}'])" "${conf}")" = 1 ]
 
 # Unpack WAR file for tomcat
@@ -108,27 +109,27 @@ RUN mkdir -p "${CATALINA_HOME}/webapps/ROOT" \
 RUN set -eu; \
     cd /data/xnat/home/plugins; \
     fetch() { \
-        curl -fsSLO --retry 3 "$1"; \
-        echo "$2  $(basename "$1")" | sha256sum -c -; \
+    curl -fsSLO --retry 3 "$1"; \
+    echo "$2  $(basename "$1")" | sha256sum -c -; \
     }; \
     # Authentication Plugins
     fetch "https://github.com/NrgXnat/ldap-auth-plugin/releases/download/1.3.0/ldap-auth-plugin-1.3.0.jar" \
-          94ad3396f71ac9c84c648658718f4a9c5fd5caba92e62ae54bac2c5993631eac; \
+    94ad3396f71ac9c84c648658718f4a9c5fd5caba92e62ae54bac2c5993631eac; \
     # TODO #30: Implement OIDC plugin
     # fetch "https://github.com/NrgXnat/openid-auth-plugin/releases/download/<version>/openid-auth-plugin-<version>-xpl.jar" <sha256>; \
     # Imaging & Workflow Plugins
     fetch "https://xnat.org/files/ohif-viewer-xnat-plugin/ohif-viewer-3.8.0-fat.jar" \
-          c8fa0b6f2f479dc1311dd7a3de6c5728b6bfb79dcc46a2f7e7e3929103f19f08; \
+    c8fa0b6f2f479dc1311dd7a3de6c5728b6bfb79dcc46a2f7e7e3929103f19f08; \
     fetch "https://github.com/NrgXnat/dicom-query-retrieve/releases/download/3.1.0/dicom-query-retrieve-3.1.0-xpl.jar" \
-          1d657eaeb31200dfa4445cb90be15cc7609e41b395cf2a5040c6a4d3c912dcb1; \
+    1d657eaeb31200dfa4445cb90be15cc7609e41b395cf2a5040c6a4d3c912dcb1; \
     fetch "https://github.com/NrgXnat/pipeline-engine-plugin/releases/download/1.2.0/pipeline_engine_ui-1.2.0-xpl.jar" \
-          21aedd6a94521dc2ce67d7ddd4154d4866ed142a80f45a78a2ae802f9fca34cb; \
+    21aedd6a94521dc2ce67d7ddd4154d4866ed142a80f45a78a2ae802f9fca34cb; \
     fetch "https://github.com/NrgXnat/container-service/releases/download/3.9.0/container-service-3.9.0-fat.jar" \
-          809042a18dfea8383b7bd5f53b367eb8ea05c2a8c3f35b519841aa17b93cd207; \
+    809042a18dfea8383b7bd5f53b367eb8ea05c2a8c3f35b519841aa17b93cd207; \
     fetch "https://github.com/NrgXnat/batch-transfer-plugin/releases/download/v1.1.1/batch-transfer-1.1.1.jar" \
-          8b583b1e0a71cbcfafec3cef14918f861184beae6001caf22db9dc3478f2c097; \
+    8b583b1e0a71cbcfafec3cef14918f861184beae6001caf22db9dc3478f2c097; \
     fetch "https://github.com/NrgXnat/batch-launch-plugin/releases/download/0.9.0/batch-launch-0.9.0-xpl.jar" \
-          3783f9f5e19db5d7a7c45c5e0314fe79ecf45ef4742baac27eec4dfa43533c6e
+    3783f9f5e19db5d7a7c45c5e0314fe79ecf45ef4742baac27eec4dfa43533c6e
 
 
 # NOTE (BNR): Ports have the following use:

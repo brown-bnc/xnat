@@ -24,6 +24,7 @@ The compose file defines two services: `xnat-web` (the XNAT application) and `po
 - **`ports`:** The `host`:`container` port mappings
   - *Note how these ports match what's exposed in the project's [Dockerfile](../Dockerfile)*
 - **`env_file`:** The path of file(s) containing environment variables loaded into the container
+- **`environment`:** Non-secret environment variables set directly on the container
 - **`volumes`:** The `host`:`container` path of file(s) mounted into the container
   - *Adds the plugin config files*
 - **`depends_on`:** Tells the service to wait for the `postgres` service to pass its healthcheck before starting
